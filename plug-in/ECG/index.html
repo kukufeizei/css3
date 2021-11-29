@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ECG</title>
+</head>
+<canvas id="ecg" width="751px" height="451px"></canvas>
+<script>
+    /**
+     * 绘制网格
+     * @param ctx
+     * @param width
+     * @param height
+     * @param xInterval 横坐标增长幅度
+     * @param yInterval 纵坐标增长幅度
+     */
+    function drawContextGrid(ctx, width, height, xInterval, yInterval) {
+        ctx.beginPath()
+        for (let x = 0.5; x < width; x += xInterval) {
+            ctx.moveTo(x, 0)
+            ctx.lineTo(x, height)
+            ctx.stroke()
+        }
+        for (let y = 0.5; y < height; y += yInterval) {
+            ctx.moveTo(0, y)
+            ctx.lineTo(width, y)
+            ctx.stroke()
+        }
+        ctx.closePath()
+    }
+
+    /**
+     * 绘制小网格
+     * @param ctx
+     * @param width
+     * @param height
+     */
+    function drawSmallGrid(ctx, width, height) {
+        ctx.strokeStyle = '#f1dedf'
+        drawContextGrid(ctx, width, height, 3, 3)
+    }
+
+    /**
+     * 绘制中等网格
+     * @param ctx
+     * @param width
+     * @param height
+     */
+    function drawMediumGrid(ctx, width, height) {
+        ctx.strokeStyle = '#f0adaa'
+        drawContextGrid(ctx, width, height, 15, 15)
+    }
+
+    /**
+     * 绘制大网格
+     * @param ctx
+     * @param width
+     * @param height
+     */
+    function drawBigGrid(ctx, width, height) {
+        ctx.strokeStyle = '#e0514b'
+        drawContextGrid(ctx, width, height, 75, 75)
+    }
+
+    /**
+     * 绘制心电图
+     * @param ctx
+     * @param data
+     */
+    function drawLine(ctx, data) {
+        // 水平线
+        const levelLine = 200
+        // 左偏移
+        const leftOffset = 50
+
+        // 心电图开始的直线
+        // ctx.lineWidth = 2 // 线条粗细
+        ctx.beginPath()
+        ctx.strokeStyle = '#a36911'
+        ctx.moveTo(0, levelLine)
+        ctx.lineTo(leftOffset, levelLine)
+        ctx.stroke()
+
+        // 连接开头直线
+        ctx.beginPath()
+        ctx.strokeStyle = 'red'
+        ctx.moveTo(leftOffset, levelLine)
+
+        for (let i = 0; i < data.length; i++) {
+            ctx.lineTo(i + leftOffset, data[i])
+        }
+
+        // 连接结尾直线
+        ctx.lineTo(700, levelLine)
+        ctx.stroke()
+
+        // 心电图结尾的直线
+        ctx.beginPath()
+        ctx.strokeStyle = '#a36911'
+        ctx.moveTo(700, levelLine)
+        ctx.lineTo(700 + leftOffset, levelLine)
+        ctx.stroke()
+    }
+
+    /**
+     * 获取数据
+     * @returns {string[]}
+     */
+    function draw() {
+        const xhr = new XMLHttpRequest()
+        xhr.open('get', 'data')
+        xhr.send()
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                let data = []
+                const response = xhr.responseText.split(' ')
+                for (let i = 0; i < response.length; i++) {
+                    data[i] = +response[i]
+                }
+                drawLine(ctx, data)
+            }
+        }
+    }
+
+    let ecg = document.getElementById('ecg')
+    let ctx = ecg.getContext('2d')
+    drawSmallGrid(ctx, ecg.width, ecg.height)
+    drawMediumGrid(ctx, ecg.width, ecg.height)
+    drawBigGrid(ctx, ecg.width, ecg.height)
+    draw()
+</script>
+</html>

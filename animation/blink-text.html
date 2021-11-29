@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>blink-text</title>
+    <style>
+        body {
+            height: 100vh;
+            background-color: #111;
+            color: #fff;
+            font-size: 3em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .blink-cursor {
+            animation: blink 1s steps(2, start) infinite;
+        }
+
+        @keyframes blink {
+            to {
+                visibility: hidden;
+            }
+        }
+    </style>
+</head>
+<body>
+<span id="type-text">...</span>
+<span class="blink-cursor">_</span>
+<script>
+    const textNode = document.getElementById('type-text')
+    let text = ''
+
+    const Util = {
+        random: () => {
+            const number = 100 * Math.random()
+            const interval = number < 50 ? 10 : number
+            return interval
+        },
+        wait: (time) => {
+            return new Promise(resolve => {
+                setTimeout(resolve, time)
+            })
+        }
+    }
+
+    const CharUtil = {
+        pushChar: char => {
+            text += char
+            TextUtil.updateText()
+        },
+        popChar: () => {
+            text = text.slice(0, text.length - 1)
+            TextUtil.updateText()
+        },
+        typeChar: char => {
+            return new Promise(resolve => {
+                const interval = Util.random()
+                CharUtil.pushChar(char)
+                Util.wait(interval).then(resolve)
+            })
+        },
+        removeChar: () => {
+            return new Promise(resolve => {
+                const interval = Util.random()
+                CharUtil.popChar()
+                Util.wait(interval).then(resolve)
+            })
+        }
+    }
+
+    const TextUtil = {
+        updateText: () => {
+            textNode.innerText = text
+        },
+        clearText: () => {
+            text = ''
+            TextUtil.updateText()
+        },
+        typeText: text => {
+            return new Promise(resolve => {
+                (function _type(index) {
+                    CharUtil.typeChar(text[index]).then(() => {
+                        if (index + 1 < text.length) {
+                            _type(index + 1)
+                        } else {
+                            resolve()
+                        }
+                    })
+                })(0)
+            })
+        },
+        removeText: amount => {
+            return new Promise(resolve => {
+                (function _remove(index) {
+                    CharUtil.removeChar().then(() => {
+                        if (index + 1 < amount) {
+                            _remove(index + 1)
+                        } else {
+                            resolve()
+                        }
+                    })
+                })(0)
+            })
+        }
+    }
+
+    // 调用开始
+    function typeLoop() {
+        TextUtil.typeText('-2-')
+            .then(() => Util.wait(2000))
+            .then(() => TextUtil.removeText(3))
+            .then(() => TextUtil.typeText('-3-'))
+            .then(() => Util.wait(2000))
+            .then(() => TextUtil.removeText(3))
+            .then(typeLoop)
+    }
+
+    Util.wait(1000).then(() => {
+        TextUtil.clearText()
+        TextUtil.typeText('-1-')
+            .then(typeLoop)
+    })
+</script>
+</body>
+</html>

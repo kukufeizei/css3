@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>几何图形</title>
+    <style>
+        html, body, #star {
+            height: 100%;
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+    </style>
+</head>
+<body>
+<div id="star"></div>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    const colors = ['rgba(200, 40, 80, 0.5)', 'rgba(255,255,255,0.5)', 'rgba(44, 221, 221, 0.5)'];
+
+    function createStar() {
+        let x = Math.floor(Math.random() * width);
+        let y = Math.floor(Math.random() * height);
+        let ele1 = document.createElement('div');
+        let ele2 = document.createElement('div');
+        ele2.appendChild(ele1);
+        ele1.style.cssText += 'position:absolute;top:-50%;left:-50%;width:100%;height:100%';
+        ele2.style.cssText += 'position:absolute;top:' + y + 'px;left:' + x + 'px;width:12px;height:12px';
+        setTimeout(function () {
+            $(ele2).css({
+                transition: 'height 1s linear 0s,width 1s linear 0s',
+                width: '64px',
+                height: '64px'
+            });
+            $(ele1).css({transform: 'rotate(360deg)', opacity: 0});
+
+            setTimeout(() => {
+                ele2.remove()
+            }, 1000);
+
+            $(ele1).css({transition: '1s linear 0s,opacity 0.5s linear 0.5s'});
+        }, 10);
+        // $(ele1).css('border-radius', '50%'); // 圆角
+        $(ele1).css('background-color', colors[Math.floor(Math.random() * colors.length)]);
+
+        star.appendChild(ele2);
+    }
+
+    let star = document.getElementById('star');
+    let width = star.offsetWidth;
+    let height = star.offsetHeight;
+    setInterval(() => {
+        for (let i = 0; i < 1; i++) {
+            createStar();
+        }
+    }, 100);
+</script>
+</body>
+</html>

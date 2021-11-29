@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>number</title>
+</head>
+<body>
+<script>
+    onload = () => {
+        // ceil 向上取整 返回不小于当前值的最大整数
+        // floor 向下取整 返回不大于当前值的最大整数
+        write(Math.ceil(1.1));
+        write(Math.floor(1.9));
+        // round 四舍五入 Math.floor(x + 0.5) 将原来数字加上0.5后向下取整
+        write(Math.round(.5));
+        write(Math.round(-.5));
+
+        // toFixed采用银行家舍入规则
+        // 四舍六入五留双 => 四舍六入五考虑 五后非零就进一 五后为零看奇偶 五前为偶应舍去 五前为奇要进一
+
+        write(.0051.toFixed(2), '进一为0.01'); // 0.01
+        write();
+
+        // Chrome Firefox Safari Opera 结果为四舍五入 反而银行家舍入规则正常
+        // 参考 Java 银行家舍入 https://github.com/tothis/java-record/blob/main/src/main/java/com/example/base/BigDecimalBase.java
+        // 可能是计算机二进制环境浮点数计算精度缺失
+        write(.085.toFixed(2), '舍去为0.08'); // 0.09
+        write(.015.toFixed(2), '进一为0.02'); // 0.01
+        write();
+
+        write('补零测试');
+
+        write(.1.toFixed(2)); // 0.10
+        write(toFixed1(.1, 2)); // 0.10
+        write(toFixed2(.1, 2)); // 0.10
+
+        write(-.1.toFixed(2)); // -0.1
+        write(toFixed1(-.1, 2)); // 0.10
+        write(toFixed2(-.1, 2)); // 0.10
+    }
+
+    const write = function () {
+        document.write(Array.prototype.slice.call(arguments).join('&nbsp') + '<br>');
+    }
+
+    // 四舍五入并补0
+    function toFixed1(number, repeat) {
+        let count = Math.pow(10, repeat);
+        number = Math.round(number * count) / count;
+        // 此处toFixed作用 把数字变为字符串并补0
+        return number.toFixed(repeat);
+    }
+
+    // 四舍五入并补0
+    function toFixed2(value, repeat) {
+        let count = Math.pow(10, repeat);
+        let result = Math.round(value * count) / count;
+        // 把数字变为字符串并补0
+        result = result.toString();
+        if (result.indexOf('0') !== 0 && result.indexOf('-0') !== 0) repeat--;
+        let dot = result.indexOf('.');
+        // 判定如果是整数 增加小数点再补0
+        if (dot === -1) {
+            result += '.';
+            dot = result.length;
+        }
+        while (result.length <= dot + repeat) {
+            result += '0';
+        }
+        return result;
+    }
+
+    // 加法
+    Number.prototype.add = function (value) {
+        return (this + value).toFixed(2);
+    }
+    // 减法
+    Number.prototype.subtract = function (value) {
+        return (this - value).toFixed(2);
+    }
+    // 乘法
+    Number.prototype.multiply = function (value) {
+        return (this * value).toFixed(2);
+    }
+    // 除法
+    Number.prototype.divide = function (value) {
+        return (this / value).toFixed(2);
+    }
+</script>
+</body>
+</html>

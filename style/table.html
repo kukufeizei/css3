@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>table</title>
+    <style>
+        table {
+            border: 1px solid #cccccc;
+            margin: 5px;
+            border-spacing: 0; /* td间距 */
+        }
+
+        td {
+            border: 1px solid #cccccc;
+            padding: 5px;
+        }
+
+        .table {
+            display: table;
+            border: 1px solid #cccccc;
+            margin: 5px;
+            /* display: table时padding会失效 */
+        }
+
+        .row {
+            display: table-row;
+            border: 1px solid #cccccc;
+            /* display: table-row时margin padding同时失效 */
+        }
+
+        .cell {
+            display: table-cell;
+            border: 1px solid #cccccc;
+            padding: 5px;
+            /* display: table-cell时margin会失效 */
+        }
+    </style>
+</head>
+<body>
+<div class="table">
+    <div class="row">
+        <div class="cell">1</div>
+        <div class="cell">2</div>
+        <div class="cell">3</div>
+    </div>
+    <div class="row">
+        <div class="cell">1</div>
+        <div class="cell">2</div>
+        <div class="cell">3</div>
+    </div>
+</div>
+<table>
+    <caption>标题</caption>
+    <thead>
+    <tr>
+        <td>1</td>
+        <td>2</td>
+        <td>3</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>1</td>
+        <td>2</td>
+        <td>3</td>
+    </tr>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td>1</td>
+        <td>2</td>
+        <td>3</td>
+    </tr>
+    </tfoot>
+</table>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ip-address</title>
+</head>
+<body>
+<p>电脑安装虚拟机时 会一同获取虚拟机和宿主机的ip</p>
+<h1 id=show></h1>
+
+<script>
+    const show = document.getElementById('show');
+
+    let RTCPeerConnection = window.RTCPeerConnection
+        || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+
+    if (RTCPeerConnection) {
+        let rtc = new RTCPeerConnection();
+        rtc.createDataChannel('通道名');
+
+        rtc.onicecandidate = function (evt) {
+            if (evt.candidate) grepSDP('flag:' + evt.candidate.candidate);
+        };
+        rtc.createOffer(offerDesc => {
+            grepSDP(offerDesc.sdp);
+            rtc.setLocalDescription(offerDesc);
+        }, function (e) {
+            console.warn('失败', e);
+        });
+    }
+
+    let addresses = new Array();
+
+    function grepSDP(sdp) {
+        sdp.split('\r\n').forEach(line => {
+            if (~line.indexOf('flag:candidate')) {
+                let parts = line.split(' '),
+                    address = parts[4];
+                if (parts[7] === 'host' && parts[8] === 'tcptype')
+                    addresses.push(address);
+            }
+        });
+
+        show.innerHTML = addresses.join('<br>');
+    }
+</script>
+</body>
+</html>

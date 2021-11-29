@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>select2</title>
+    <link href="https://cdn.bootcss.com/select2/4.0.12/css/select2.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- 配置multiple属性 开启多选 -->
+<select id="select2" multiple>
+    <option value>---提示语---</option>
+    <option value></option>
+    <option value></option>
+    <option value="0">0</option>
+    <option>1</option>
+</select>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/select2/4.0.12/js/select2.min.js"></script>
+<script>
+    const selectData = [
+        {id: 1, text: '-1-'},
+        {id: 2, text: '-2-'},
+        {id: 3, text: '-3-'}
+    ];
+
+    const select2 = $('#select2').select2({
+        // placeholder 选择框的提示语 需要select中有一个value为空的option
+        placeholder: '请选择',
+        // 隐藏搜索框 0显示 -1隐藏
+        // minimumResultsForSearch: -1,
+        data: selectData, // text会被有相同值的option标签覆盖
+        // ajax加载数据
+        // ajax: {
+        //     url: "data.json",
+        //     dataType: 'json',
+        //     delay: 250, // 用户停止输入多少毫秒后开始查询
+        //     data: function (params) {
+        //         return {
+        //             // search为发送到服务端的参数名 params.term为输入框中输入的内容
+        //             search: params.term,
+        //         };
+        //     },
+        //     processResults: function (data) {
+        //         return {
+        //             results: data
+        //         };
+        //     },
+        //     cache: true
+        // },
+        // 输入指定长度字符后搜索 如需显示所有option 可不配置此值 默认值为0
+        // minimumInputLength: 2
+    });
+
+    // select2赋值方式 val中为option的value数组
+    $('#select2').val(['0', '1']).trigger('change');
+</script>
+</body>
+</html>

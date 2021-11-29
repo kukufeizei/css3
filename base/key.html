@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>key</title>
+    <style>
+        .content {
+            width: 400px;
+            height: 400px;
+            background: burlywood;
+            margin: auto;
+            position: relative;
+        }
+
+        #block {
+            width: 50px;
+            height: 50px;
+            background: red;
+            position: absolute;
+            top: 300px;
+            left: 175px;
+        }
+
+        input {
+            padding-left: 20px;
+            font-size: 14px;
+            border: 2px solid #e4277d;
+            border-radius: 12px;
+            outline: none;
+        }
+
+        /* 作为dom元素 伪元素都是在容器内进行渲染 input无法容纳其他元素 */
+        /* input::after {} */
+
+        p::after {
+            content: 'test';
+        }
+
+        span::before {
+            /* 获取自定义属性的值 */
+            content: attr(data);
+        }
+    </style>
+</head>
+<body>
+<input>
+<p></p>
+<span data="span"></span>
+<div class="content">
+    <div id="block"></div>
+</div>
+<script>
+    /**
+     * keydown 按下按键 按下执行 按下期间一直执行
+     * keypress 按下按键并抬起 抬起时执行 执行一次
+     * keyup 按键抬起 抬起时执行 执行一次
+     *
+     * 执行顺序 onkeydown onkeypress onkeyup
+     *
+     * keypress 无法识别系统按钮 如 箭头键 功能键 alt ctrl shift esc等等
+     */
+    // document.addEventListener('keydown', function () {
+    //     console.log('onkeydown');
+    // });
+    // document.addEventListener('keypress', function () {
+    //     console.log('onkeypress');
+    // });
+    // document.addEventListener('keyup', function () {
+    //     console.log('onkeyup');
+    // });
+
+    let block = document.getElementById('block');
+    document.onkeydown = function (event) { // 键盘按下事件
+        event = event || window.event;
+        switch (event.keyCode) {
+            case 37: // 左
+                block.style.left = Math.max(0, block.offsetLeft - 5) + 'px';
+                break;
+            case 38: // 上
+                block.style.top = Math.max(0, block.offsetTop - 5) + 'px';
+                break;
+            case 39:  // 右
+                block.style.left = Math.min(350, block.offsetLeft + 5) + 'px';
+                break;
+            case 40:  // 下
+                block.style.top = Math.min(350, block.offsetTop + 5) + 'px';
+                break;
+        }
+    }
+
+    document.onmousedown = function (event) {
+        event = event || window.event;
+        if (event.button == 0) {
+            console.log("鼠标左键");
+        } else if (event.button == 2) {
+            console.log("鼠标右键");
+        } else if (event.button == 1) {
+            console.log("鼠标滚轮");
+        }
+    }
+
+    document.onkeypress = function (event) { // 键盘按下并抬起事件
+        event = event || window.event;
+        switch (event.keyCode) {
+            case 37: // 左
+                console.log('左');
+                break;
+            case 39:  // 右
+                console.log('右');
+                break;
+        }
+    }
+
+    let input = document.getElementsByTagName('input')[0];
+    // input.oninput = function () {
+    //     changeAffter("p::after{content:'输入" + this.value + "';}");
+    // }
+    input.onblur = function () {
+        changeAffter("p::after{content:'失焦" + this.value + "';}");
+    }
+    input.onfocus = function () {
+        changeAffter("p::after{content:'获焦" + this.value + "';}");
+    }
+    // onchange会被onblur覆盖
+    input.onchange = function () {
+        changeAffter("p::after{content:'改变" + this.value + "';}");
+    }
+    // onkeypress会被oninput覆盖
+    input.onkeypress = function (event) {
+        changeAffter("p::after{content:'伪类" + this.value + "';}");
+    }
+    // 当前对象属性发生改变触发事件 ie专属
+    input.onpropertychange = function () {
+        changeAffter("p::after{content:'ie专属" + this.value + "';}");
+    }
+
+    function changeAffter(css) {
+        // 在存在的style文档中动态插入样式
+        // document.styleSheet[0].addRule('p::after{content:'addRule';}');
+        // document.styleSheet[0].insertRule('p::after{content:'insertRule';}' ,0);
+        let style = document.createElement('style');
+        try {
+            style.appendChild(document.createTextNode(css));
+        } catch (e) {
+            style.sheet.cssText = css;
+        }
+        let head = document.getElementsByTagName('head')[0];
+        head.appendChild(style);
+
+        let p = document.getElementsByTagName('p')[0];
+        let span = document.getElementsByTagName('span')[0];
+        // span.innerText = document.defaultView.getComputedStyle(p,'after').getPropertyValue('content');
+        // span.innerText = document.defaultView.getComputedStyle(p,':after').getPropertyValue('content');
+        // span.innerText = document.defaultView.getComputedStyle(p,'::after').getPropertyValue('content');
+        span.setAttribute('data', document.defaultView.getComputedStyle(p, '::after').getPropertyValue('content'));
+    }
+
+    changeAffter("p::after{content:'后缀';}");
+
+    // document.onkeydown = function (event) {
+    //     event = event || window.event;
+    //
+    //     if (event.ctrlKey && event.keyCode == 83) {
+    //         console.log("ctrlKey s");
+    //         return false;
+    //     }
+    //
+    //     // f12
+    //     if (event.keyCode == 123) {
+    //         return false;
+    //     }
+    // }
+    // 禁止鼠标右键功能
+    // document.oncontextmenu = function () {
+    //     return false;
+    // }
+    // 禁止copy功能
+    // document.oncopy = function () {
+    //     return false;
+    // }
+</script>
+</body>
+</html>

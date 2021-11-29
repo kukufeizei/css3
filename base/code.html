@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>code</title>
+    <!-- 代码高亮样式 -->
+    <link id="theme" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/default.min.css" rel="stylesheet">
+    <style>
+        .copy {
+            position: relative;
+        }
+
+        .copy:hover .copy-btn {
+            display: block;
+        }
+
+        pre .copy-btn {
+            display: none;
+            position: absolute;
+            right: 4px;
+            top: 18px;
+            font-size: 12px;
+            color: #4d4d4d;
+            background-color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+<input value="原生实现复制" onclick="select();document.execCommand('copy')">
+<!-- 只在ie生效 参数一 内容格式 参数二复制内容 -->
+<!-- <input value="原生实现复制" onclick="clipboardData.setData('test', value);"> -->
+<textarea id="textarea-cut">
+    clipboard.js只能在textarea或input中cut
+</textarea>
+<button class="copy-btn" data-clipboard-action="cut" data-clipboard-target="#textarea-cut">剪切</button>
+<input id="input-cut">
+<button class="copy-btn" data-clipboard-action="cut" data-clipboard-target="#input-cut">剪切</button>
+<pre class="copy">
+    <code>
+        &lt;h1&gt;example code &lt;/h1&gt;
+        &lt;h2&gt;example code &lt;/h2&gt;
+        &lt;h3&gt;example code &lt;/h3&gt;
+    </code>
+</pre>
+<pre class="copy">
+    <code>
+        public static main (string[] args) {
+            System.out.println(0);
+        }
+    </code>
+</pre>
+<!-- 代码高亮插件 -->
+<script src="https://cdn.bootcss.com/highlight.js/9.18.1/highlight.min.js"></script>
+<!-- 复制剪切插件 -->
+<script src="https://cdn.bootcss.com/clipboard.js/2.0.4/clipboard.min.js"></script>
+<script></script>
+<script>
+
+    // 渲染pre下的code内容 如果元素是动态生成的使用hljs.highlightBlock(ele)渲染
+    hljs.initHighlightingOnLoad();
+
+    // 获取所有的代码区域的pre元素节点
+    const copys = document.getElementsByClassName('copy');
+    for (let i = 0; i < copys.length; i++) {
+        // 生成复制按钮
+        let content = '<div class="copy-btn" ' +
+            'data-clipboard-action="copy" ' + // 默认操作为copy
+            'data-clipboard-target="#code-' + i + '">' +
+            '复制</div>';
+
+        // pre元素对象
+        let copy = copys[i];
+
+        // 找到code元素 并添加id属性
+        copy.firstChild.nextSibling.id = 'code-' + i;
+
+        // 将复制按钮追加至页面
+        let html = copy.innerHTML + content;
+        copy.innerHTML = html;
+    }
+
+    // 初始化复制功能
+    const clipboardJs = new ClipboardJS('.copy-btn');
+
+    // 复制成功事件
+    clipboardJs.on('success', function (e) {
+        reset(e.trigger, e.trigger.textContent);
+        e.trigger.textContent += '成功';
+    });
+    // 复制失败事件
+    clipboardJs.on('error', function (e) {
+        reset(e.trigger, e.trigger.textContent);
+        e.trigger.textContent += '失败';
+    });
+
+    function reset(that, text) {
+        setTimeout(function () {
+            that.textContent = text;
+        }, 1000)
+    }
+
+    /**
+     * 替换css样式文件
+     */
+    const themes = ['dark', 'agate', 'an-old-hope', 'androidstudio', 'arta', 'gml'];
+
+    for (let i = 0; i < themes.length; i++) {
+        let button = document.createElement('button');
+        button.onclick = setTheme;
+        button.textContent = themes[i];
+        document.body.appendChild(button);
+    }
+
+    const theme = document.getElementById('theme');
+    const prefix = theme.href.substr(0, theme.href.lastIndexOf('/') + 1);
+    const suffix = '.min.css';
+
+    function setTheme() {
+        theme.href = prefix + this.textContent + suffix;
+    }
+</script>
+</body>
+</html>

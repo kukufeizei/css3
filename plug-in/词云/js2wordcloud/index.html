@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Js2WordCloud</title>
+    <style scoped>
+        html, body, #main {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div id='main'></div>
+<script src="node_modules/js2wordcloud/dist/js2wordcloud.min.js"></script>
+<script>
+    const cloud = new Js2WordCloud(document.getElementById('main'))
+    let list = []
+    for (let i = 0; i < 500; i++) {
+        list.push(['a' + i, i % 2])
+    }
+    cloud.setOption({
+        list,
+        tooltip: {
+            show: true,
+            backgroundColor: '#e91e63'
+        },
+        color: '#15a4fa',
+        imageShape: 'yunxi.png'
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>xlsx.js</title>
+</head>
+<body>
+<input type="file">
+<button onclick="openDownloadDialog(sheet2blob(sheet), '导出.xlsx')">下载文件</button>
+<!-- http://sheetjs.com -->
+<script src="https://cdn.bootcss.com/xlsx/0.15.5/xlsx.core.min.js"></script>
+<script>
+    document.querySelector('[type=file]').onchange = function () {
+        let file = this.files[0];
+        const reader = new FileReader();
+        reader.readAsBinaryString(file);
+        reader.onload = (e) => {
+            const data = e.target.result;
+            const excel = window.XLS.read(data, {
+                type: 'binary'
+            });
+            const result = [];
+            for (let i = 0; i < excel.SheetNames.length; i++) {
+                const data = window.XLS.utils.sheet_to_json(excel.Sheets[excel.SheetNames[i]]);
+                result.push(...data);
+            }
+            console.log(result, 'result');
+            for (let item of result) {
+                document.write(JSON.stringify(item) + '<br>');
+            }
+        }
+    }
+
+    let data = [
+        // 合并地方后面预留null值
+        ['主页信息', null, '附加信息', null]
+        , ['name', 'gender', 'age', 'createDate']
+        , ['frank', 'female', 20, new Date()]
+        , ['linda', 'female', 18, new Date()]
+    ];
+    let sheet = XLSX.utils.aoa_to_sheet(data);
+    sheet['!merges'] = [
+        // 合并a1-b1单元格
+        {s: {r: 0, c: 0}, e: {r: 0, c: 1}}
+        // 合并c1-d1单元格
+        , {s: {r: 0, c: 2}, e: {r: 0, c: 3}}
+    ];
+
+    // 将sheet转成excel文件blob对象 并使用URL.createObjectURL下载
+    function sheet2blob(sheet, sheetName) {
+        sheetName = sheetName || 'sheet1';
+        let workbook = {
+            SheetNames: [sheetName],
+            Sheets: {}
+        };
+        workbook.Sheets[sheetName] = sheet;
+        // 生成excel的配置项
+        let wopts = {
+            bookType: 'xlsx', // 要生成的文件类型
+            // 是否生成Shared String Table 官方解释是 如果开启生成速度会下降 但在低版本ios设备上有更好的兼容性
+            bookSST: false,
+            type: 'binary'
+        };
+        let wb = XLSX.write(workbook, wopts);
+        let blob = new Blob([s2ab(wb)], {type: 'application/octet-stream'});
+
+        // 字符串转ArrayBuffer
+        function s2ab(s) {
+            let buf = new ArrayBuffer(s.length);
+            let view = new Uint8Array(buf);
+            for (let i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+
+        return blob;
+    }
+
+    /**
+     * 通用打开下载对话框
+     * @param url 下载地址 也可以是一个blob对象 必选
+     * @param saveName 保存文件名 可选
+     */
+    function openDownloadDialog(url, saveName) {
+        if (typeof url == 'object' && url instanceof Blob) {
+            url = URL.createObjectURL(url); // 创建blob地址
+        }
+        let link = document.createElement('a');
+        link.href = url;
+        // html5新增属性 指定保存文件名 可以不要后缀 注意file:///模式不会生效
+        link.download = saveName || '';
+        let event;
+        if (window.MouseEvent)
+            event = new MouseEvent('click');
+        else {
+            event = document.createEvent('MouseEvents');
+            event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        }
+        link.dispatchEvent(event);
+    }
+</script>
+</body>
+</html>

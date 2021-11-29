@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>video.js</title>
+    <!-- <link href="//vjs.zencdn.net/7.6.6/video-js.min.css" rel="stylesheet"> -->
+    <link href="https://cdn.bootcss.com/video.js/7.6.6/video-js.min.css" rel="stylesheet">
+    <style>
+        .vjs-poster {
+            background-size: cover;
+        }
+
+        .vjs-big-play-button {
+            top: 50% !important;
+            left: 50% !important;
+            margin-top: -.81666em;
+            margin-left: -1.5em;
+        }
+    </style>
+</head>
+<body>
+<video id="video" class="video-js">
+    <!-- hls直播源地址 CCTV1高清 -->
+    <source src="http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8">
+</video>
+<!-- <script src="//vjs.zencdn.net/7.6.6/video.min.js"></script> -->
+<script src="https://cdn.bootcss.com/video.js/7.6.6/video.min.js"></script>
+<script>
+    const player = videojs('video', {
+        controls: true, // 是否显示控制栏
+        muted: false, // 是否静音
+        loop: false, // 是否循环播放
+        poster: '../static/image/cool2.gif',
+        height: 800,
+        width: 1200
+    });
+</script>
+</body>
+</html>

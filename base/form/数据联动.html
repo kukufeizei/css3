@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>省市区联动</title>
+</head>
+<body>
+省份<select id="province" data-test="test" onchange="resetCity()">
+    <!-- option不存在value属性时 value为option的textContent值 -->
+    <option>选择省份</option>
+</select>
+城市<select id="city" onchange="resetArea()">
+    <option>选择城市</option>
+</select>
+地区<select id="area">
+    <option>选择地区</option>
+</select>
+test1<select multiple id="test1"></select>
+test2
+<select id="test2">
+</select>
+<script>
+    let provinceArr = [1, 2, 3];
+    let cityArr = [
+        [11, 12, 13]
+        , [21, 22, 23]
+        , [31, 32, 33]
+    ];
+    let areaArr = [
+        [
+            [111, 112, 113], [121, 122, 123], [131, 132, 133]
+        ], [
+            [211, 212, 213], [221, 222, 223], [231, 232, 233]
+        ], [
+            [311, 312, 313], [321, 322, 323], [331, 332, 333]
+        ]
+    ];
+
+    let province = document.getElementById('province');
+
+    // 初始化省份数据
+    for (let i = 0; i < provinceArr.length; i++) {
+        let option = document.createElement('option');
+        option.innerText = provinceArr[i];
+        option.dataset.test = 'test';
+        province.appendChild(option);
+    }
+
+    let city = document.getElementById('city');
+
+    function resetCity() {
+        // 清空城市数据
+        city.length = 1;
+        // 重置地区数据
+        resetArea();
+
+        // 当前省份位置
+        let provinceIndex = province.selectedIndex;
+
+        if (provinceIndex === 0) return;
+
+        // 当前城市数据
+        let _cityArr = cityArr[provinceIndex - 1];
+        for (let i = 0; i < _cityArr.length; i++) {
+            let option = document.createElement('option');
+            option.innerText = _cityArr[i];
+            city.appendChild(option);
+        }
+    }
+
+    let area = document.getElementById('area');
+
+    function resetArea() {
+        // 清空地区数据
+        area.length = 1;
+        // 当前城市位置
+        let cityIndex = city.selectedIndex;
+
+        if (cityIndex === 0) return;
+
+        // 当前省份位置
+        let provinceIndex = province.selectedIndex;
+        // 当前地区数据
+        let _areaArr = areaArr[provinceIndex - 1][cityIndex - 1];
+        for (let i = 0; i < _areaArr.length; i++) {
+            let option = document.createElement('option');
+            option.innerText = _areaArr[i];
+            area.appendChild(option);
+        }
+    }
+
+    /**
+     * 设置select选中的值
+     * @param select select文档对象
+     * @param checkValue 目标option值
+     */
+    function selectChecked(select, value) {
+        let options = select.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value === value) {
+                options[i].selected = true;
+                break; // 结束循环
+            }
+        }
+    }
+
+    /**
+     * 获取select选中的option元素的dataset属性
+     * @param select select文档对象
+     */
+    function selectDataSet(select) {
+        let options = select.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].selected === true) {
+                return options[i].dataset;
+            }
+        }
+    }
+
+    /**
+     * 获取select已选中的多个值 使用value只能获取一个值
+     * @param select select文档对象
+     */
+    function multipleValue(select) {
+        let result = '';
+        for (let i = 0; i < select.length; i++) {
+            if (select.options[i].selected) {
+                result += select.options[i].value + ',';
+            }
+        }
+        if (result !== '') {
+            result = result.substr(0, result.length - 1);
+        }
+        return result;
+    }
+
+    // 测试 select的 dataset功能
+
+    // 设置select选中值
+    selectChecked(province, '3');
+    resetCity();
+
+    console.log(selectDataSet(province).test);
+    console.log(province.dataset.test);
+
+    const test1 = document.getElementById('test1');
+    for (let i = 0; i < 10; i++) {
+        // console.log(test.options, 'options');
+        /**
+         * 显示文本
+         * value
+         * 标签是否增加selected属性 值会被第四个参数覆盖
+         * 标签selected状态是否为true
+         */
+        test1.options.add(new Option('option-' + i, i.toString(), i % 2 === 0, i % 2 === 0));
+    }
+
+    console.log(multipleValue(test1), 'multipleValue');
+    const test2 = document.getElementById('test2');
+    for (let i = 1; i < 4; i++) {
+        // test2.options.add(new Option('option-' + i, i.toString(), i === 1, i === 2)); // 2
+        test2.options.add(new Option('option-' + i, i.toString(), i === 1)); // 1
+    }
+    console.log(test2.value);
+</script>
+</body>
+</html>

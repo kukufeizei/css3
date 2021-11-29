@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>svg</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<script>
+    // 通过createElementNS创建svg元素并设置属性
+    let svg = createSvg('svg', {viewBox: '0 0 100 100'});
+
+    // 创建矩形元素并设置属性
+    let rect = createSvg('rect', {
+        x: 10
+        , y: 10
+        , width: 16
+        , height: 20
+        , style: 'fill:#ff6666;stroke-width:1;stroke:rgb(255,0,0)'
+    });
+
+    // 矩形元素绑定鼠标事件实现动态效果
+    rect.onmouseenter = function () {
+        this.setAttribute('style', 'fill:rgb(225,0,0);stroke-width:1;stroke:rgb(255,102,102)');
+    }
+    rect.onmouseleave = function () {
+        this.setAttribute('style', 'fill:#ff6666;stroke-width:1;stroke:rgb(255,0,0)');
+    }
+
+    // 使用path创建扇形元素
+    let fan = createSvg('path');
+    fan.setAttribute('d', 'M0 0 L10 0 A10 10 90 0 1 0 10');
+    fan.setAttribute('style', 'fill:green;');
+
+    // 扇形元素绑定鼠标事件实现动态效果
+    fan.onmouseenter = function () {
+        this.setAttribute('style', 'fill:yellow;');
+    }
+    fan.onmouseleave = function () {
+        this.setAttribute('style', 'fill:green;');
+    }
+
+    /**
+     * js创建svg元素
+     * @param tag svg的标签名
+     * @param svg元素的属性
+     */
+    function createSvg(tag, attrs) {
+        let element = document.createElementNS('http://www.w3.org/2000/svg', tag);
+        for (let attr in attrs) {
+            element.setAttribute(attr, attrs[attr])
+        }
+        return element;
+    }
+
+    let panelSvg = createSvg('g');
+    let gridSvg = createSvg('g');
+    panelSvg.appendChild(gridSvg);
+    svg.appendChild(panelSvg);
+    let width = 100;
+    let height = 100;
+    let gridLength = 4;
+
+    // 绘制网格
+    drawGrid(gridSvg, width, height, gridLength);
+
+    /**
+     * 绘制网络
+     * @param gridSvg 绘制网格对象
+     * @param winWidth 区域宽度
+     * @param winHeight 区域高度
+     * @param gridLength 网格大小
+     */
+    function drawGrid(gridSvg, winWidth, winHeight, gridLength) {
+        let childs = gridSvg.childNodes;
+        // 删除之前的网格节点 便于绘制
+        for (let i = childs.length - 1; i >= 0; i--) {
+            gridSvg.removeChild(childs.item(i));
+        }
+        let widthLength = Math.ceil(winWidth / gridLength);
+        for (let i = 0; i < widthLength; i++) {
+            let attrs = {
+                x1: i * gridLength,
+                y1: 0,
+                x2: i * gridLength,
+                y2: winHeight,
+                stroke: '#add'
+            };
+            let line = createSvg('line', attrs);
+            gridSvg.appendChild(line);
+        }
+        let heightLength = Math.ceil(winHeight / gridLength);
+        for (let i = 0; i <= heightLength; i++) {
+            let attrs = {
+                x1: 0,
+                y1: i * gridLength,
+                x2: winWidth,
+                y2: i * gridLength,
+                stroke: '#add'
+            };
+            let line = createSvg('line', attrs);
+            gridSvg.appendChild(line)
+        }
+    }
+
+    /**
+     * svg缩放
+     * num 收缩的倍数
+     */
+    let scale = 1;
+
+    function zoom(num) {
+        scale *= num;
+        panelSvg.setAttribute('transform', 'scale(' + scale + ')');
+        drawGrid(gridSvg, width * (1 / scale), height * (1 / scale), gridLength);
+    }
+
+    // 绑定鼠标滑轮
+    if (document.addEventListener) {
+        document.addEventListener('DOMMouseScroll', scrollZoom, false);
+    }
+    window.onmousewheel = document.onmousewhell = scrollZoom;
+
+    /**
+     * 滑轮滚动处理事件 向上滚动放大
+     */
+    function scrollZoom(e) {
+        e = e || window.event;
+        // e.detail用来兼容FireFox
+        e.wheelDelta > 0 || e.detail > 0 ? zoom(1.1) : zoom(0.9);
+    }
+
+    // 将矩形和扇形元素添加到SVG元素内
+    svg.appendChild(rect);
+    svg.appendChild(fan);
+
+    // svg元素添加到页面内显示
+    document.body.appendChild(svg);
+</script>
+</body>
+</html>

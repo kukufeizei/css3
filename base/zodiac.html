@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>zodiac</title>
+    <style>
+        img {
+            display: inline-block;
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 50%;
+            animation: rotate 2s infinite ease-in-out;
+        }
+
+        rotate {
+            display: inline-block;
+            width: 300px;
+            height: 300px;
+            text-align: center;
+            /* vertical-align在display为inline或inline-block时生效 默认baseline 即标签内文本和标签底端对齐 */
+            vertical-align: top;
+            border-radius: 50%;
+            color: grey;
+            background-color: black;
+            border: 6px solid #e8582e;
+            border-top: 6px solid #61eaab;
+            -webkit-animation: load .8s infinite linear;
+            animation: load .8s infinite linear;
+        }
+
+        rotate::after {
+            content: 'rotate';
+            position: relative;
+            font-size: 80px;
+            top: 96px;
+        }
+
+        @keyframes rotate {
+            100% {
+                transform: rotate(720deg);
+            }
+        }
+
+        @keyframes load {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        form {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<form onsubmit="switchZodiac();return false;">
+    出生年份<input id="year">
+    出生月份<select id="month">
+    <script>
+        for (let i = 1; i <= 12; i++) {
+            document.write('<option>' + i + '</option>');
+        }
+    </script>
+</select>
+    出生天数<input id="day">
+    星座<input id="zodiac1" readonly>
+    属相<input id="zodiac2" readonly>
+    <button onclick="switchZodiac()">
+        计算一下
+    </button>
+</form>
+<img src="../static/image/image2.png">
+<rotate></rotate>
+<script>
+
+    let zodiac1 = document.getElementById('zodiac1');
+    let zodiac2 = document.getElementById('zodiac2');
+    let zodiacArr = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
+
+    function switchZodiac() {
+        let year = document.getElementById('year').value;
+        let month = document.getElementById('month').value;
+        let day = document.getElementById('day').value;
+        let zodiac = (year - 1924) % 12;
+        zodiac1.value = zodiacArr[zodiac];
+        if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) {
+            zodiac2.value = '白羊座';
+        } else if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) {
+            zodiac2.value = '金牛座';
+        } else if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) {
+            zodiac2.value = '双子座';
+        } else if ((month == 6 && day >= 21) || (month == 7 && day <= 21)) {
+            zodiac2.value = '巨蟹座';
+        } else if ((month == 7 && day >= 22) || (month == 8 && day <= 22)) {
+            zodiac2.value = '狮子座';
+        } else if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) {
+            zodiac2.value = '处女座';
+        } else if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) {
+            zodiac2.value = '天秤座';
+        } else if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) {
+            zodiac2.value = '天蝎座';
+        } else if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) {
+            zodiac2.value = '射手座';
+        } else if ((month == 12 && day >= 22) || (month == 1 && day <= 19)) {
+            zodiac2.value = '摩羯座';
+        } else if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) {
+            zodiac2.value = '水瓶座';
+        } else if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) {
+            zodiac2.value = '双鱼座';
+        }
+    }
+</script>
+</body>
+</html>

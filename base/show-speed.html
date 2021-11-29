@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>showSpeed</title>
+    <style>
+        img {
+            display: none;
+        }
+
+        #show {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<script>
+    let begin = new Date();
+</script>
+<img src="https://dss3.baidu.com/-fo3dSag_xI4khGko9WTAnF6hhy/super/crop=96,0,1728,1080/sign=df81604d9322720e6f81b8ba46f23c6a/d788d43f8794a4c2ab68220405f41bd5ad6e3952.jpg">
+<div id="show"></div>
+<script>
+    document.querySelector('img').onload = () => {
+        let fileSize = 345;
+        let end = new Date();
+        let speed = Math.round(fileSize * 1000 / (end - begin));
+        document.getElementById('show').innerHTML = ('网速 => ' + speed * 8 + 'k');
+    }
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') {
+            document.title = '离开';
+        }
+        if (document.visibilityState === 'visible') {
+            document.title = '回来';
+        }
+        // document.title = document.hidden ? 'hide' : 'show';
+    });
+</script>
+</body>
+</html>

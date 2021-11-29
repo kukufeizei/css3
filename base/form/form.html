@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>form</title>
+</head>
+<body>
+<form id="dataForm">
+    <div>
+        <textarea autofocus readonly></textarea>
+        <input name="text" id="text" value="文本">
+        <!-- select禁用 提交表单会被忽略 -->
+        <select name="select" disabled>
+            <option selected>1</option>
+            <option>2</option>
+            <option>3</option>
+        </select>
+        <!-- select只读 提交表单不被忽略 -->
+        <select name="select" onmousedown="return false">
+            <option>1</option>
+            <option>2</option>
+            <option selected>3</option>
+        </select>
+        <input type="submit" value="提交">
+        <!-- button标签type属性默认为submit点击后会提交form表单 -->
+        <button type="button" onclick="ele.focus()">获取焦点</button>
+        <button type="button" onclick="ele.blur()">失去焦点</button>
+        <button type="button" id="isClick1">防止多次点击</button>
+        <button type="button" id="isClick2">防止多次点击</button>
+    </div>
+</form>
+<!-- form="dataForm" 关联id为dataForm的form -->
+<input form="dataForm" id="search" name="search" placeholder="请输入要查询的内容">
+<button form="dataForm">提交</button>
+<input form="dataForm" type="submit" value="提交">
+<script>
+    const form = document.querySelector('form');
+
+    const ele = document.createElement('textarea');
+    ele.name = 'content';
+    ele.autofocus = true;
+    ele.readOnly = true;
+    ele.textContent = '内容内容内容';
+    ele.appendChild(text);
+    form.appendChild(ele);
+
+    document.getElementById('text').onfocus = function () {
+        this.value = '获取焦点';
+    }
+    document.getElementById('text').onblur = function () {
+        this.value = '失去焦点';
+    }
+
+    form.onsubmit = function () {
+        console.log(serializeForm(form));
+        // 禁止提交
+        return false;
+    }
+
+    // 组合url
+    function serializeElement(element) {
+
+        if (element.name === '') {
+            return;
+        }
+
+        let tagName = element.tagName;
+        let param;
+        if (tagName === 'SELECT' && element.disabled === false) {
+            param = [element.name, element.value];
+        }
+        if (tagName === 'TEXTAREA') {
+            param = [element.name, element.value]
+        }
+        if (tagName === 'INPUT') {
+            switch (element.type) {
+                case 'SUBMIT':
+                    break;
+                case 'RADIO':
+                case 'CHECKBOX':
+                    if (element.checked) {
+                        param = [element.name, element.value];
+                    }
+                    break;
+                default:
+                    param = [element.name, element.value];
+                    break;
+            }
+        }
+        if (param) {
+            let key = encodeURIComponent(param[0]);
+            if (key.length === 0)
+                return;
+            if (param[1].constructor !== Array)
+                param[1] = [param[1]];
+            let values = param[1];
+            let result = [];
+            for (let i = 0; i < values.length; i++) {
+                result.push(key + '=' + encodeURIComponent(values[i]));
+                console.log(param[0], values[i]);
+            }
+            return result.join('&');
+        }
+    }
+
+    // 调用方法
+    function serializeForm(formEle) {
+        // form中所有表单元素
+        let elements = formEle.elements;
+
+        let result = new Array();
+        for (let i = 0; i < elements.length; i++) {
+            let queryComponent = serializeElement(elements[i]);
+            if (queryComponent) {
+                result.push(queryComponent);
+            }
+        }
+        return result.join('&');
+    }
+
+    let events = new Array();
+    let inputBtns = document.querySelectorAll('input[type=submit]');
+    let btns = document.getElementsByTagName('button');
+    events.push(...inputBtns, ...btns);
+
+    events.forEach(
+        item => item.addEventListener('click', () => {
+            console.log('按钮点击');
+        })
+    );
+
+    // 提交方法
+    function submitForm(event) {
+        // 因为此方法由throttle方法调用因此如下三个打印皆为undefined
+        // console.log(event.target, 'target');
+        // console.log(event.srcElement, 'srcElement');
+        // console.log(event.currentTarget, 'currentTarget');
+
+        console.log('提交操作', new Date().getTime())
+    }
+
+    /**
+     * 节流函数 通过控制每次事件执行时间间隔控制短时间多次执行方法
+     * handler 要执行的方法
+     * wait 每次点击事件执行的时间间隔(毫秒)
+     */
+    // 时间戳方案
+    function throttle1(handler, wait) {
+        // 'return () =>'上代码只会执行一次 且在页面加载后执行
+        let lastTime = 0;
+        return () => {
+            let nowTime = new Date().getTime();
+            if (nowTime - lastTime > wait) {
+                handler.apply(this, arguments);
+                lastTime = nowTime;
+            }
+        }
+    }
+
+    // 定时器方案
+    function throttle2(handler, wait) {
+        let isClick = true;
+        return () => {
+            if (isClick) {
+                setTimeout(() => {
+                    isClick = true;
+                }, wait);
+                // 先执行setTimeout下语句 后执行setTimeout内语句
+                handler.apply(this, arguments);
+                isClick = false;
+            }
+        }
+    }
+
+
+    // btn1按钮1秒钟内只能被点击一次
+    document.getElementById('isClick1')
+        .addEventListener('click', throttle1(submitForm, 1000));
+    document.getElementById('isClick2')
+        .addEventListener('click', throttle2(submitForm, 1000));
+
+    /**
+     * 防抖函数 通过推迟每次事件执行的时间来减少不必要的查询
+     * handler 要执行的方法
+     * delay 每次事件执行的推迟时间(毫秒)
+     */
+    function debounce(handler, delay) {
+        let timer;
+
+        // return () => {
+        return function () {
+            let self = this, arg = arguments;
+
+            // 清除上一次记录的定时器 保证源函数只执行一次
+            clearTimeout(timer);
+
+            timer = setTimeout(() => {
+                handler.apply(self, arg)
+            }, delay)
+        }
+    }
+
+    document.getElementById('search').addEventListener('keyup', debounce((event) => {
+        console.log(event.target, 'target');
+        console.log('查询操作', new Date().getTime());
+    }, 3000));
+</script>
+</body>
+</html>

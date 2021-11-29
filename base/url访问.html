@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>url访问</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            outline: none;
+        }
+
+        /* placeholder开始 */
+        input::-webkit-input-placeholder {
+            text-align: center;
+            color: #ff0074;
+        }
+
+        input::-moz-placeholder { /* Mozilla Firefox 19+ */
+            text-align: center;
+            color: #ff0074;
+        }
+
+        input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+            text-align: center;
+            color: #ff0074;
+        }
+
+        input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+            text-align: center;
+            color: #ff0074;
+        }
+
+        /* placeholder结束 */
+
+        iframe {
+            width: calc(100% - 10px);
+            height: calc(95% - 10px);
+            border: 5px solid #808080;
+            border-radius: 10px;
+        }
+
+        .header {
+            width: 85%;
+            height: 4%;
+            margin: 0 auto;
+        }
+
+        button {
+            border: none;
+            opacity: 0.5;
+            width: 25%;
+            height: 100%;
+            border-radius: 25px;
+            color: white;
+            background: #3f51b5;
+            font-size: 16px;
+        }
+
+        input {
+            padding-left: 20px;
+            font-size: 14px;
+            border: 2px solid #e4277d;
+            border-radius: 12px;
+        }
+
+        input:first-child {
+            width: 50%;
+            height: 80%;
+        }
+
+        input:nth-child(2) {
+            width: 20%;
+            height: 80%;
+        }
+
+        button:active {
+            opacity: 1;
+            color: #e4277d;
+            background-color: #f9f9f9;
+        }
+
+        #button2 {
+            display: none;
+        }
+
+        #button2 span:nth-child(2) {
+            display: none;
+        }
+
+        #button2:hover {
+            background-color: darkseagreen;
+        }
+
+        #button2:hover > span:nth-child(1) {
+            display: none;
+        }
+
+        #button2:hover > span:nth-child(2) {
+            display: inline;
+            color: palevioletred;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <input id="url" placeholder="请输入url地址">
+    <input id="time" placeholder="请输入访问间隔时间">
+    <button id="button1" onclick="submit()">执行</button>
+    <button id="button2" onclick="cancel()">
+        <span id="text"></span>
+        <span>点击取消</span>
+    </button>
+</div>
+<iframe id="show"></iframe>
+<script>
+    let interval;
+
+    // 完整实例
+    function submit() {
+        document.getElementById('button1').style.display = 'none';
+        document.getElementById('button2').style.display = 'inline-block';
+        document.getElementById('text').innerText = '正在刷新';
+        clearInterval(interval);
+        let time = document.getElementById('time').value;
+        let url = document.getElementById('url').value;
+
+        document.getElementById('show').src = url;
+
+        let index = 1;
+        interval = setInterval(function () {
+            document.getElementById('show').src = url;
+            index++;
+            console.log('第' + index + '次执行 -> ' + time * 1000);
+            document.getElementById('text').innerText = '已访问' + index + '次';
+        }, time * 1000);
+    }
+
+    function cancel() {
+        clearInterval(interval);
+        document.getElementById('button1').style.display = 'inline-block';
+        document.getElementById('button2').style.display = 'none';
+    }
+</script>
+</body>
+</html>

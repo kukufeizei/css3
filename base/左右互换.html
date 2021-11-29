@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>左右互换</title>
+    <style>
+
+        select {
+            width: 100px;
+            height: 200px;
+        }
+
+        button {
+            position: relative;
+            top: -100px;
+        }
+
+        div {
+            width: 350px;
+            height: 350px;
+            padding: 10px;
+            border: 1px solid #aaaaaa;
+            float: left;
+        }
+
+        img {
+            width: 100%;
+            height: calc(calc(100% - 10px) / 3);
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+<select id="left" multiple>
+    <option>a</option>
+    <option>b</option>
+    <option>c</option>
+    <option>d</option>
+</select>
+<button onclick="_switch('right','left')">left</button>
+<button onclick="_switch('left','right')">right</button>
+<select id="right" multiple>
+    <option>h</option>
+    <option>g</option>
+    <option>f</option>
+    <option>e</option>
+</select>
+
+<p>图片左右拖拽</p>
+
+<div ondrop="drop(event)" ondragover="dragover(event)"></div>
+
+<div ondrop="drop(event)" ondragover="dragover(event)">
+    <img id="drag1" src="../static/image/image1.png" ondragstart="dragstart(event)">
+    <img id="drag2" src="../static/image/cool1.gif" ondragstart="dragstart(event)">
+    <img id="drag3" src="../static/image/cool2.gif" ondragstart="dragstart(event)">
+</div>
+<script>
+    function _switch(ele1, ele2) {
+        let left = document.getElementById(ele1);
+        let index = left.selectedIndex;
+        let right = document.getElementById(ele2);
+        let option = document.createElement('option');
+        option.innerHTML = left[index].text;
+        right.appendChild(option);
+        left.options[index] = null;
+    }
+
+    let images = document.getElementsByTagName('img');
+    for (let i = 0; i < images.length; i++) {
+        images[i].id = 'id' + i;
+    }
+
+    function dragover(e) {
+        e.preventDefault();
+    }
+
+    function dragstart(e) {
+        e.dataTransfer.setData('img', e.target.id);
+    }
+
+    function drop(e) {
+        let Img = e.dataTransfer.getData('img');
+        e.target.appendChild(document.getElementById(Img));
+    }
+</script>
+</body>
+</html>

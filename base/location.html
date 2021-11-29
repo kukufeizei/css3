@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>location</title>
+</head>
+<body>
+<!--
+nofllow 告诉搜索引擎 不将该链接计入权重
+跳转页面时 目标页面可通过window.opener操作当前页部分内容
+Chrome 49+ Opera 36+ 打开添加了rel=noopener的链接 window.opener为null
+在老浏览器 可使用rel=noreferrer 禁用HTTP头部的Referer属性
+
+JS 实现方式
+let otherWindow = window.open('http://www.baidu.com');
+otherWindow.opener = null;
+otherWindow.location = url;
+-->
+<a rel="noopener noreferrer">location</a>
+<!-- <button onclick="success()">success</button> -->
+<button onclick="history.back()">back</button>
+<button onclick="history.go(-1)">go(-1)</button>
+<button onclick="history.forward()">forward</button>
+<button onclick="history.go(1)">go(1)</button>
+<p id="show"></p>
+
+<script>
+    function param(key) {
+        let regExp = new RegExp('(^|&)' + key + '=([^&]*)(&|$)', 'i');
+        let result = (arguments[1] ? location.hash : location.search).substr(1).match(regExp);
+        return result ? decodeURI(result[2]) : null;
+        // 另一种写法
+        // let result = location.hash.match(new RegExp(key + '=([^&]*)'));
+        // return result ? decodeURI(result[1]) : null;
+    }
+
+    console.log(param('name')); // 获取url'?'后参数
+    console.log(param('age', true)); // 获取url'#'后参数
+
+    for (let i = 0; i < 6; i++) {
+        let button = document.createElement('button');
+        button.innerText = '加载' + (i + 1);
+        button.onclick = eval('load' + (i + 1));
+        document.body.appendChild(button);
+    }
+
+    const href = location.protocol + '//' + location.host + location.pathname + '?' + Math.random();
+
+    function load1() {
+        history.go(0);
+    }
+
+    function load2() {
+        location.reload();
+    }
+
+    function load3() {
+        location.replace(href);
+    }
+
+    function load4() {
+        location.assign(href);
+    }
+
+    function load5() {
+        // location = location;
+        location.href = href;
+    }
+
+    function load6() {
+        // 增加history地址记录 onpopstate事件可以获取state值
+        let state = 'content';
+        history.pushState(state, null, 'load/url');
+        // 替换history当前地址记录
+        // history.replaceState(state, null, 'load/url');
+    }
+
+    /*// 必须声明方法 否则无法删除此监听器
+    function state() {
+        history.pushState(null, null, document.URL);
+    }
+
+    history.pushState(null, null, document.URL);
+    // 禁用浏览器回退页面操作
+    window.addEventListener('popstate', state);
+    // 使用history.forward()和history.go(1)也可禁用回退 但快速点击浏览器返回按钮会失效
+
+    function success() {
+        // 开启浏览器回退页面操作
+        window.removeEventListener('popstate', state);
+    }*/
+
+    (function (history) {
+        let pushState = history.pushState;
+        history.pushState = function () {
+            // 执行pushState时 打印state对象
+            console.log(arguments[0], 'pushState');
+            return pushState.apply(history, arguments);
+        };
+    })(window.history);
+
+    /**
+     * 触发 popstate 事件条件
+     *
+     * 用户点击浏览器后退或前进
+     * 调用 histroy.back() history.forward()
+     * 调用 history.go() 且值不为0
+     */
+    window.addEventListener('popstate', function (event) {
+        console.log(event.state, 'popstate');
+    });
+
+    /*// 自定义返回事件
+    window.history.pushState(null, null, ''); // 清空浏览器历史记录
+    // 监听浏览器后退事件 跳转指定的 URL
+    window.addEventListener('popstate', e => location.href = './zodiac.html');*/
+
+    document.querySelector('a').href = href;
+
+    const show = document.getElementById('show');
+    let flag = sessionStorage.getItem('flag');
+    if (flag) {
+        flag = Number(flag) + 1;
+        show.innerText = '已刷新 => ' + flag;
+        sessionStorage.setItem('flag', flag.toString());
+    } else {
+        show.innerText = '未刷新';
+        sessionStorage.setItem('flag', '0');
+    }
+</script>
+</body>
+</html>

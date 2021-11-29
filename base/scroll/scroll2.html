@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>scroll</title>
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+        }
+
+        .content {
+            height: 100%;
+        }
+
+        #scroll {
+            display: none;
+        }
+
+        #scroll::after {
+            content: '\f25a';
+            font-family: fontawesome;
+            font-size: 50px;
+            color: white;
+            right: 50px;
+            bottom: 50px;
+            cursor: pointer;
+            position: fixed;
+        }
+
+        img {
+            /* 等同于<img src='xx'> */
+            content: url(../../static/image/image2.png);
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <script>
+        for (let i = 0; i < 5; i++) {
+            document.write('<img>');
+        }
+    </script>
+</div>
+<div id="scroll"></div>
+</body>
+<script>
+    let scrollTop;
+    let scroll = document.getElementById('scroll');
+
+    scroll.onclick = function () {
+        let timer = setInterval(function () {
+            window.scrollBy(0, -20);
+            if (scrollTop == 0)
+                clearInterval(timer);
+        }, 2);
+    }
+
+    // 窗口滚动检测
+    /**
+     * 有 doctype 声明页面可使用 document.documentElement.scrollTop 获取 scrollTop 高度
+     * 无 doctype 声明页面使用 document.body.scrollTop 获取 scrollTop 高度
+     * safari 使用 window.pageYOffset 获取 scrollTop 高度
+     */
+    window.onscroll = function () {
+        scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+        scroll.style.display = (scrollTop >= 300) ? 'block' : 'none';
+    }
+</script>
+</html>

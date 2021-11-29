@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>滑块解锁</title>
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        .content {
+            position: relative;
+            width: 300px;
+            height: 40px;
+            margin: 0 auto;
+            background-color: #e8e8e8;
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            line-height: 40px;
+            font-size: 14px;
+        }
+
+        .content::after {
+            content: attr(data-text);
+
+            position: absolute;
+            /* 脱离文档流后父元素设置的text-align: center;会失效 使用如下方式实现居中 */
+            left: 50%;
+            -webkit-transform: translateX(-50%);
+            -moz-transform: translateX(-50%);
+            transform: translateX(-50%);
+        }
+
+        .bg-color {
+            position: absolute;
+            height: 40px;
+            background-color: lightblue;
+        }
+
+        .slider {
+            position: absolute;
+            top: 0;
+            width: 50px;
+            height: 38px;
+            border: 1px solid #ccc;
+            background: #fff;
+            text-align: center;
+            cursor: move;
+            z-index: 1;
+        }
+
+        .slider > i {
+            line-height: 40px;
+        }
+
+        .slider.active > i {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+<div class="content" data-text="滑动解锁">
+    <div class="bg-color"></div>
+    <div class="slider"><i class="fa fa-arrow-right"></i></div>
+</div>
+<script>
+    //  定义了一个获取元素的方法
+    function $(selector) {
+        return document.querySelector(selector);
+    }
+
+    // 获取到需要用到的dom元素
+    let content = $('.content'),
+        bgColor = $('.bg-color'), // 背景
+        text = $('.text'), // 文本
+        slider = $('.slider'), // 滑块
+        icon = $('.slider>i'),
+        successMoveDistance = content.offsetWidth - slider.offsetWidth, // 解锁需要滑动的距离
+        downX, // 用于存放鼠标按下时的位置
+        isSuccess = false; // 是否解锁成功的标志 默认不成功
+
+    // 给滑块添加鼠标按下事件
+    slider.onmousedown = function (e) {
+        e = e || window.event;
+        bgColor.style.transition = null;
+        slider.style.transition = null;
+        downX = e.clientX;
+        // 在鼠标按下时 分别给鼠标添加移动和松开事件
+        document.onmousemove = onmousemove;
+        document.onmouseup = onmouseup;
+    }
+
+    // 定义一个获取鼠标当前需要移动多少距离的方法
+    function getOffsetX(offset, min, max) {
+        if (offset < min) {
+            offset = min;
+        } else if (offset > max) {
+            offset = max;
+        }
+        return offset;
+    }
+
+    // 鼠标移动事件函数
+    function onmousemove(e) {
+        e = e || window.event;
+        let moveX = e.clientX;
+        let offsetX = getOffsetX(moveX - downX, 0, successMoveDistance);
+        bgColor.style.width = offsetX + 'px';
+        slider.style.left = offsetX + 'px';
+
+        if (offsetX == successMoveDistance) {
+            success();
+        }
+    }
+
+    // 鼠标松开事件的方法实现
+    function onmouseup() {
+        if (!isSuccess) {
+            bgColor.style.width = '0';
+            slider.style.left = '0';
+            bgColor.style.transition = 'width .1s linear';
+            slider.style.transition = 'left .1s linear';
+        }
+        document.onmousemove = null;
+        document.onmouseup = null;
+    }
+
+    // 滑块解锁成功
+    function success() {
+        isSuccess = true;
+        content.dataset.text = '解锁成功';
+        bgColor.style.backgroundColor = 'lightgreen';
+        slider.className = 'slider active';
+        icon.className = 'fa fa-eercast';
+        // 滑动成功时 移除鼠标按下事件和鼠标移动事件
+        slider.onmousedown = null;
+        document.onmousemove = null;
+    }
+</script>
+</body>
+</html>

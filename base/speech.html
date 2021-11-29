@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>speech</title>
+</head>
+<body>
+<button id="start">start</button>
+<button id="stop">stop</button>
+<button id="speak">speak</button>
+<button id="pause">pause</button>
+<script>
+    /**
+     * 如下api在翻墙后生效
+     */
+    /**
+     * 语音识别
+     */
+    let newRecognition = new webkitSpeechRecognition();
+
+    // true一直识别 false识别到声音就关闭
+    newRecognition.continuous = true;
+
+    document.getElementById('start').onclick = () => {
+        // 语音识别
+        newRecognition.start();
+    }
+    document.getElementById('stop').onclick = () => {
+        // 语音识别关闭
+        newRecognition.stop();
+    }
+
+    // 接收消息后会触发onresult事件
+    newRecognition.onresult = function (event) {
+        console.log(event);
+    }
+    newRecognition.onsoundstart = e => {
+        console.log("开始收听了");
+        console.log(e);
+    }
+    newRecognition.onspeechstart = e => {
+        console.log("开始讲话了");
+        console.log(e);
+    }
+    newRecognition.onspeechend = e => {
+        console.log("讲话完毕");
+        console.log(e);
+    }
+    newRecognition.onerror = e => {
+        console.log("发生异常");
+        console.log(e);
+    }
+
+    /**
+     * 语音合成
+     */
+    let synthesisUtterance = new window.SpeechSynthesisUtterance('hi 李磊');
+
+    document.getElementById('speak').onclick = () => {
+        window.speechSynthesis.speak(synthesisUtterance);
+    }
+
+    document.getElementById('pause').onclick = () => {
+        // 暂停
+        window.speechSynthesis.pause();
+    }
+
+    /**
+     * top() 停止合成
+     * pause() 暂停合成
+     * resume() 重新开始合成
+     * getVoices() 返回浏览器支持的语音包数组
+     */
+    console.log(window.speechSynthesis.getVoices());
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>encryption</title>
+</head>
+<body>
+<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script>
+<script src="https://cdn.bootcss.com/js-sha1/0.6.0/sha1.min.js"></script>
+<script src="https://cdn.bootcss.com/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+<script>
+    onload = () => {
+        const plaintext = '!@#$%^&*()-_=+{[]}\\|;:\'",<.>/?a0⋙🙃磊';
+        let ciphertext;
+
+        write('密码明文 => ', plaintext);
+
+        // btoa和atob不能转化Latin1范围之外的字符 使用encodeURIComponent和decodeURIComponent解决
+        ciphertext = btoa(encodeURIComponent(plaintext));
+        write("Base64 编码 => ", ciphertext);
+        write("Base64 解码 => ", decodeURIComponent(atob(ciphertext)));
+        // 经测试与 Java MD5 加密结果一致
+        write('MD5 加密 => ', md5(plaintext));
+        write('SHA1 加密 => ', sha1(plaintext));
+
+        let aseKey = '12345678' // 秘钥必须为 8/16/32位
+        // 加密
+        ciphertext = aesEncrypt(plaintext, aseKey);
+        write('ASE 加密 => ', ciphertext);
+        // 解密
+        write('ASE 解密 => ', aesDecrypt(ciphertext, aseKey));
+
+    }
+
+    function aesEncrypt(plaintext, aseKey) {
+        return CryptoJS.AES.encrypt(plaintext, CryptoJS.enc.Utf8.parse(aseKey), {
+            mode: CryptoJS.mode.ECB,
+            padding: CryptoJS.pad.Pkcs7
+        });
+    }
+
+    function aesDecrypt(ciphertext, aseKey) {
+        return CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Utf8.parse(aseKey), {
+            mode: CryptoJS.mode.ECB,
+            padding: CryptoJS.pad.Pkcs7
+        }).toString(CryptoJS.enc.Utf8);
+    }
+
+    const write = function () {
+        document.write(Array.prototype.slice.call(arguments).join('') + '<br>');
+    }
+
+    const chars = '0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ+/'.split('');
+
+    function str10to64(number) {
+        let radix = chars.length,
+            result = [],
+            mod;
+        do {
+            mod = number % radix;
+            number = (number - mod) / radix;
+            result.unshift(chars[mod]);
+        } while (number);
+        return result.join('');
+    }
+
+    function str64to10(number) {
+        number = String(number);
+        let radix = chars.length,
+            len = number.length,
+            i = 0,
+            result = 0;
+        while (i < len) {
+            result += Math.pow(radix, i++) * chars.indexOf(number.charAt(len - i) || 0);
+        }
+        return result;
+    }
+
+    console.log(str10to64(100));
+    console.log(str64to10('1A'));
+</script>
+</body>
+</html>

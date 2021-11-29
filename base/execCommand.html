@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>execCommand</title>
+</head>
+<body>
+<input id="text1" value="文本">
+
+<button onclick="copy()">copy</button>
+<button onclick="paste()">paste</button>
+
+<textarea id="text2" rows="10" cols="50"></textarea>
+
+<hr>
+<!-- <iframe id="content" style="border: none;width: 100%"></iframe> -->
+<!-- contenteditable="true"文档可编辑 -->
+<div id="content" contenteditable="true">
+    <script>
+        for (let i = 0; i < 5; i++) {
+            document.write('文本文本文本文本文本文本文本文本文本文本<br>');
+        }
+    </script>
+</div>
+<hr>
+<button data-name="bold">文字变粗</button>
+<button data-name="italic">文字变斜</button>
+<button data-name="strikethrough">文字删除线</button>
+<button data-name="underline">文字下滑线</button>
+<button data-name="superscript">文字变细</button>
+<button data-name="fontsize" data-value="4">文字大小设为4</button>
+<button data-name="backcolor" data-value="gray">改变背景颜色</button>
+<button data-name="foreColor" data-value="pink">改变文字颜色</button>
+<button data-name="insertparagraph">插入p</button>
+<button data-name="insertorderedlist">插入ol</button>
+<button data-name="insertunorderedlist">插入ul</button>
+<button data-name="createlink" data-value="http://baidu.com">插入链接</button>
+<button data-name="unlink">删除链接</button>
+<button data-name="insertimage" data-value="../static/image/cool2.gif">插入图像</button>
+<button data-name="print">打印页面</button>
+<input type="button" value="显示内容"
+       onclick="this.nextElementSibling.value = document.getElementById('content').innerText">
+<textarea></textarea>
+<script>
+    const text1 = document.getElementById('text1');
+    const text2 = document.getElementById('text2');
+
+    const content = document.getElementById('content');
+    // Chrome、Firefox 和 Safari 只能针对可编辑页面执行 execCommand 方法
+    // IE 9 和 Opera 可针对不可编辑页面执行 execCommand 方法
+    // document.designMode = 'on'; // 文档可编辑
+
+    // const iframe = document.getElementById('content').contentDocument;
+    // // const iframe = window.frames ['content'];
+    // iframe.designMode = 'on'; // 文档可编辑
+    // for (let i = 0; i < 5; i++) {
+    //     iframe.write('文本文本文本文本文本文本文本文本文本文本<br>');
+    // }
+
+    let btns = document.getElementsByTagName('button');
+    for (let i = 0; i < btns.length; i++) {
+        if (btns[i].getAttribute('data-name') !== null)
+            btns[i].onclick = function () {
+                document.execCommand(this.dataset.name, false, this.dataset.value);
+            }
+    }
+
+    /**
+     * document.execCommand 使用
+     * 1. 命令名称 必填
+     * 2. 是否展示用户界面 默认 false
+     * 3. 额外参数 默认为 null
+     */
+    function copy() {
+        text1.select();
+        console.log(document.execCommand('copy'), 'copy');
+
+        navigator.clipboard.readText().then(text => {
+            navigator.clipboard.writeText(text + '李磊')
+                .then(() => {
+                    console.log('复制成功');
+                });
+        });
+    }
+
+    function paste() {
+        text2.focus();
+        // Chrome 不支持 execCommand('paste')粘贴
+        // console.log(document.execCommand('paste'), 'paste');
+        navigator.clipboard.readText().then(text => {
+            console.log('剪贴板内容 => ', text);
+            text2.value += text;
+        }).catch(err => {
+            console.error('读取剪贴板内容失败', err);
+        });
+    }
+
+    document.onkeydown = function () {
+        event = event || window.event;
+        let keyCode = event.keyCode || event.which || event.charCode;
+        if (event.ctrlKey && keyCode === 66) {
+            document.execCommand('bold');
+        }
+    }
+
+    // 粘贴图片
+    content.addEventListener('paste', function (e) {
+        let clipboardData = e.clipboardData;
+        if (clipboardData) {
+            let items = clipboardData.items;
+            if (items.length === 0) {
+                return;
+            }
+            let types = clipboardData.types;
+            for (let i = 0; i < types.length; i++) {
+                if (types[i] === 'Files') {
+                    let item = items[i];
+                    if (item.kind === 'file' && item.type.match(/^image\//i)) {
+                        let reader = new FileReader();
+                        reader.onloadend = function (e) {
+                            let image = document.createElement('img');
+                            image.src = e.target.result;
+                            image.cssText = 'max-width:60%;max-height:250px;';
+                            content.appendChild(image)
+                        };
+                        reader.readAsDataURL(item.getAsFile());
+                    }
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

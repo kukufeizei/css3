@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>person</title>
+    <style>
+        body {
+            background-color: black;
+            overflow-x: hidden;
+        }
+
+        .person {
+            position: absolute;
+            height: 75px;
+            width: 0;
+            color: #fff;
+            left: 150px;
+            top: 159px;
+            animation: sprint 2s infinite ease-in;
+        }
+
+        .person .head {
+            position: absolute;
+            top: -30px;
+            left: -6px;
+            height: 30px;
+            width: 30px;
+            border-radius: 50%;
+            border: 4px solid white;
+            transform-origin: 50% 100% 0;
+            animation: bob 2s infinite alternate;
+        }
+
+        .person .head:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -6px;
+            height: 3px;
+            width: 42px;
+            border-radius: 20%;
+            border: 4px solid white;
+            background-color: #fff;
+        }
+
+        .person .head:after {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 9px;
+            height: 12px;
+            width: 15px;
+            border-radius: 30%;
+            border: 4px solid white;
+            background-color: #fff;
+        }
+
+        .person .torso {
+            position: absolute;
+            height: 60px;
+            border-left: 2px solid white;
+            top: 15px;
+        }
+
+        .person .part {
+            position: absolute;
+            top: 75px;
+        }
+
+        .person .part.arm {
+            position: absolute;
+            border-left: 3px solid white;
+            border-bottom: 3px solid white;
+            height: 45px;
+            width: 39px;
+            top: 15px;
+            transform-origin: 0 0 0;
+            animation: pump 1s infinite ease-in-out;
+        }
+
+        .person .part.arm.two {
+            animation-delay: .5s;
+        }
+
+        .person .part.leg {
+            height: 57px;
+            width: 60px;
+            border-right: 3px solid white;
+            border-top: 3px solid white;
+            animation: run 1s infinite ease-in;
+            transform-origin: 0 0 0;
+        }
+
+        .person .part.leg.two {
+            animation-delay: .5s;
+        }
+
+        @keyframes run {
+            0% {
+                transform: rotate3d(0, 0, 1, -5deg);
+            }
+            50% {
+                transform: rotate3d(0, 0, 1, 150deg);
+            }
+            100% {
+                transform: rotate3d(0, 0, 1, -5deg);
+            }
+        }
+
+        @keyframes bob {
+            0% {
+                transform: rotate3d(0, 0, 1, 5deg);
+            }
+            25% {
+                transform: rotate3d(0, 0, 1, -30deg) skew(15deg, 0deg);
+            }
+            50% {
+                transform: rotate3d(0, 0, 1, 5deg);
+            }
+            75% {
+                transform: rotate3d(0, 0, 1, -30deg) skew(15deg, 0deg);
+            }
+            100% {
+                transform: rotate3d(0, 0, 1, 20deg) skew(-15deg, 0deg);
+            }
+        }
+
+        @keyframes pump {
+            0% {
+                transform: rotate3d(0, 0, 1, 80deg);
+            }
+            50% {
+                transform: rotate3d(0, 0, 1, -70deg);
+            }
+            100% {
+                transform: rotate3d(0, 0, 1, 80deg);
+            }
+        }
+
+
+        @keyframes sprint {
+            0% {
+                transform: translate(-18vw, 0);
+            }
+            100% {
+                transform: translate(86vw, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="person">
+    <div class="head"></div>
+    <div class="part arm one"></div>
+    <div class="part arm two"></div>
+    <div class="torso"></div>
+    <div class="part leg one"></div>
+    <div class="part foot one"></div>
+    <div class="part leg two"></div>
+    <div class="part foot two"></div>
+</div>
+</body>
+</html>

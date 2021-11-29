@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>图片位移</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        #wrap {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: #fff0f0;
+        }
+
+        #wrap img {
+            position: absolute;
+            width: 14%;
+            height: 44%;
+            border-radius: 20px;
+            object-fit: cover;
+        }
+
+        #wrap img:nth-of-type(1) {
+            left: 8%;
+            top: 10%;
+        }
+
+        #wrap img:nth-of-type(2) {
+            left: 16%;
+            top: 34%;
+            z-index: 1;
+        }
+
+        #wrap img:nth-of-type(3) {
+            left: 30%;
+            top: 44%;
+            z-index: 2;
+        }
+
+        #wrap img:nth-of-type(4) {
+            right: 30%;
+            bottom: 44%;
+            z-index: 3;
+        }
+
+        #wrap img:nth-of-type(5) {
+            right: 16%;
+            bottom: 34%;
+            z-index: 4;
+        }
+
+        #wrap img:nth-of-type(6) {
+            right: 8%;
+            bottom: 10%;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">
+    <img src="../../static/image/cool1.gif">
+    <img src="../../static/image/cool2.gif">
+    <img src="../../static/image/image1.png">
+    <img src="../../static/image/image2.png">
+    <img src="../../static/image/cool1.gif">
+    <img src="../../static/image/cool2.gif">
+</div>
+<script>
+    let wrap = document.getElementById('wrap');
+    let images = wrap.getElementsByTagName('img');
+
+    for (let i = 0; i < images.length; i++) {
+        images[i].startX = parseInt(getStyle(images[i], 'left'))
+        images[i].startY = parseInt(getStyle(images[i], 'top'))
+    }
+    wrap.onmousemove = function (e) {
+        e = e || window.event;
+        // 获取鼠标位置与div中心点位置的距离
+        let centerX = e.clientX - (wrap.offsetLeft + this.offsetWidth / 5);
+        let centerY = e.clientY - (wrap.offsetTop + this.offsetHeight / 5);
+        for (let i = 0; i < images.length; i++) {
+            // 获取每个img的z-index
+            let zIndex = getStyle(images[i], 'zIndex');
+            zIndex = zIndex === 'auto' ? 0 : zIndex;
+            // z-index越大移动的相对距离越小
+            let left = -parseInt(centerX / images.length * (images.length - zIndex) / 20);
+            let top = -parseInt(centerY / images.length * (images.length - zIndex) / 20);
+            // 图片的距离等于原先的距离加上计算的距离
+            images[i].style.left = images[i].startX + left + 'px';
+            images[i].style.top = images[i].startY + top + 'px';
+        }
+    }
+
+    function getStyle(obj, attr) {
+        if (obj.currentStyle) {
+            // 兼容ie
+            return obj.currentStyle[attr];
+        }
+        return getComputedStyle(obj)[attr];
+    }
+
+    // 获得角度
+    function getAngle(angX, angY) {
+        return Math.atan2(angY, angX) * 180 / Math.PI;
+    };
+
+    // 根据起点终点返回方向 1向上 2向下 3向左 4向右 0未滑动
+    function getDirection(startX, startY, endX, endY) {
+        let angx = endX - startX;
+        let angy = endY - startY;
+        let result = 0;
+        // 如果滑动距离太短
+        if (Math.abs(angx) < 2 && Math.abs(angy) < 2) {
+            return result;
+        }
+        let angle = getAngle(angx, angy);
+        if (angle >= -135 && angle <= -45) {
+            result = 1;
+        } else if (angle > 45 && angle < 135) {
+            result = 2;
+        } else if ((angle >= 135 && angle <= 180) || (angle >= -180 && angle < -135)) {
+            result = 3;
+        } else if (angle >= -45 && angle <= 45) {
+            result = 4;
+        }
+        return result;
+    }
+
+    let startX, startY;
+    // 手指接触屏幕
+    document.addEventListener('touchstart', function (e) {
+        startX = e.touches[0].pageX;
+        startY = e.touches[0].pageY;
+    }, false);
+    // 手指离开屏幕
+    document.addEventListener('touchend', function (e) {
+        let endX, endY;
+        endX = e.changedTouches[0].pageX;
+        endY = e.changedTouches[0].pageY;
+        let result = getDirection(startX, startY, endX, endY);
+        switch (result) {
+            case 0:
+                alert('未滑动');
+                break;
+            case 1:
+                alert('向上');
+                break;
+            case 2:
+                alert('向下');
+                break;
+            case 3:
+                alert('向左');
+                break;
+            case 4:
+                alert('向右');
+                break;
+            default:
+                break;
+        }
+    });
+</script>
+</body>
+</html>

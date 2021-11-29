@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>js基本知识</title>
+</head>
+<body>
+<a href="tel:xxxx">电话</a><br>
+<a href="sms:xxxx">短信</a><br>
+<a href="mailto:xxxx@example.com">邮件</a>
+<script>
+    /**
+     * if(变量)和if(条件)区别
+     * if(变量) 可以看作为 if (变量 == null或undefined或true)
+     * if(变量 === true或false) 会被浏览器忽略
+     * 如下打印 temp2 temp3 temp6 temp7 temp9 temp13 temp16
+     *
+     * 根据js这种特性如下三种表达式皆等同于三元表达式
+     * let flag=null
+     *
+     * flag==null?1:null => 1
+     * !flag==null?1:null => null
+     *
+     * flag?null:1 => 1
+     * !flag?null:1 => null
+     *
+     * flag||1 => 1
+     * !flag||1 => true
+     */
+    let temp; // 定义变量未初始化
+
+    if (temp) console.log('temp1');
+    if (!temp) console.log('temp2');
+
+    if (temp == null) console.log('temp3');
+    if (temp === null) console.log('temp4');
+
+    temp = 0;
+    if (temp) console.log('temp5');
+    if (!temp) console.log('temp6');
+
+    if (temp == false) console.log('temp7');
+    if (temp === false) console.log('temp8');
+
+    temp = 1;
+    if (temp == true) console.log('temp9');
+    if (temp === true) console.log('temp10');
+
+    temp = ''; // 或等于其它值
+    if (temp == true) console.log('temp11');
+    if (temp === true) console.log('temp12');
+    if (temp == false) console.log('temp13');
+    if (temp === false) console.log('temp14');
+    if (temp) console.log('temp15');
+    if (!temp) console.log('temp16');
+
+    function three(var1) {
+        return function (var2) {
+            console.log(var2)
+            return function (var3) {
+                console.log(var3)
+                let array = [var1, var2, var3];
+                return array.join('&');
+            }
+        }
+    }
+
+    console.log(three('one')('two')('three'));
+
+    // typeof使用 typeof返回值为字符串类型
+    console.log(typeof x); // undefined
+    console.log(typeof (true)); // boolean
+    console.log(typeof true); // boolean
+    console.log(typeof '李磊'); // string
+    console.log(typeof 123); // number
+    console.log(typeof NaN); // number
+    console.log(typeof null); // object    
+    console.log(typeof (new String())); // object
+    console.log(typeof (function () {
+    })); // function
+    console.log(typeof (class User {
+    })); // function
+    console.log(typeof x === undefined); // false
+    console.log(typeof x === 'undefined'); // true
+
+    // 使用typeof获取引用类型变量时 无论引用什么类型对象 都返回'object'
+    // 此时需要instanceof来检测某个对象是不是另一个对象的实例
+    // instanceof运算符用来测试一个对象在其原型链中是否存在一个构造函数的prototype属性
+    let array = new Array();
+
+    console.log(array instanceof Array); // true
+
+    // Array是Object子类
+    console.log(array instanceof Object); // true
+
+    console.log('----');
+
+    function A(var1, var2) {
+        this.var1 = var1;
+        this.var2 = var2;
+    }
+
+    let a = new A('one', 'two');
+    console.log(Object.getPrototypeOf(a) === A.prototype);
+    console.log(a instanceof A); // true
+    console.log(a.constructor === A); // true
+    /**
+     * 1. isPrototypeOf() 判断某个prototype对象和某个实例之间的关系
+     * 2. hasOwnProperty() 判断某个对象是否包含某个属性 非继承
+     * 3. in 判断是否在某个对象里
+     */
+    // Object.prototype.isPrototypeOf(a) === true
+    // console.log('one' in a); // true
+    console.log(a instanceof Object); // true
+
+    // instanceof 可在继承关系中判断一个实例是否属于它的父类型
+    function B(var3) {
+        this.var3 = var3;
+    }
+
+    // B基础A js原型继承
+    B.prototype = new A();
+    let b = new B();
+    console.log(b.hasOwnProperty('var1')); // true
+    console.log(b.hasOwnProperty('var2')); // false
+    console.log(b.hasOwnProperty('var3')); // true
+    console.log(b instanceof B) // true
+    console.log(b instanceof A) // true
+
+    console.log('----');
+    console.log(Object instanceof Object); // true
+    console.log(Function instanceof Function); // true
+    console.log(Number instanceof Number); // false
+    console.log(String instanceof String); // false
+    console.log(Function instanceof Object); // true
+    console.log(B instanceof Function); // true
+    console.log(B instanceof B); // false
+    console.log('----');
+
+    /**
+     * arguments
+     * arguments.length为函数实参个数
+     * arguments.callee引用函数自身
+     * arguments对象不能显式创建
+     * arguments对象函数开始执行时可用
+     * arguments获取长度和下标取值与数组方法相同
+     */
+    function argumentsTest() {
+        let temp = '';
+        for (let i = 0; i < arguments.length; i++) {
+            temp += arguments[i];
+            if (i === arguments.length - 1) break;
+            temp += ',';
+        }
+
+        console.log(arguments);
+        console.log(arguments[0]);
+        //console.log(arguments[0]());
+        return temp;
+    }
+
+    console.log(argumentsTest(0, '1', "2")); // 0,1,2
+    // callee属性 返回正被执行的function对象 即当前函数主体
+    let sum = function (num) {
+        if (num === 1) {
+            return 1;
+        } else {
+            // 使用arguments实现匿名的递归函数
+            return arguments.callee(num - 1); // 2 1
+        }
+    }
+    console.log(sum(3)); // 1
+
+    // window length = 10;
+    // 都可作为window的变量
+    var length = 10;
+
+    function c() {
+        // console.log(this);
+        console.log(this.length);
+    }
+
+    let d = {
+        fun: function () {
+            // 调用c方法 此时c中的this代表window对象
+            c();
+            // 调用arguments中第一个参数即如下c方法 此时c中的this为arguments对象
+            arguments[0]();
+        }
+    };
+
+    d.fun(c, 1); // 10 2
+
+    // 传多个参数用argument求最大值
+    function max() {
+        let max = arguments[0];
+        for (val of arguments) {
+            if (val >= max) {
+                max = val;
+            }
+        }
+        return max;
+    }
+
+    console.log(max(1, "2", '3'));
+
+    // js函数有两种命名方式
+
+    // 声明式会导致函数提升 function会被解释器优先编译 即用声明式写函数 可以在任何区域声明 不会影响我们调用
+    function test() {
+    }
+
+    // 函数表达式 function不会出现函数提升 而由js解释器逐行解释 到了这一句才会解释
+    // 因此调用语句在函数表达式之前调用 会调用失败
+
+    test();
+
+    function test() {
+    } // 可以正常调用
+
+    test();
+    var test = function () {
+    } // 无法调用
+
+    // 对函数表达式加上() 可直接调用 但如果对声明式函数后部加上()会被编译器忽略
+
+    var test = function () {
+        console.log('直接调用');
+    }(); // 直接调用
+    // function test() {
+    //     console.log('会被忽略');
+    // }(); // 会被忽略
+    // function(){}被()包含 或在定义前加上一元运算符 会被编译器识别为函数表达式 并被直接调用
+    (function test() {
+        console.log('直接调用');
+    })();
+
+    // () 没什么实际意义 不操作返回值 即自执行匿名函数
+    console.log((function () {
+        return 'a';
+    })()); // a
+    // 自执行匿名函数另一种写法
+    console.log((function () {
+        return 'a';
+    }())); // a
+
+    // ! 对返回值的真假取反
+    console.log(!function () {
+        return;
+    }()); // true undefined属于false
+    console.log(!function () {
+        return 'a';
+    }()); // false 字符串a属于真
+    console.log(!function () {
+        return 0;
+    }()); // true 数字0属于假
+    console.log(!function () {
+        return '0';
+    }()); // false 字符串0属于真
+
+    // + - 是对返回值进行数学运算
+    console.log(+function () {
+        return 5.1;
+    }()); // 5.1
+    console.log(-function () {
+        return 5.1;
+    }()); // -5.1
+    console.log(+function () {
+        return '5.1';
+    }()); // 5.1 可见返回值不是数字类型的时候 + - 会将返回值进行强制转换
+    console.log(-function () {
+        return '-5.1';
+    }()); // 5.1 强制转化
+    console.log(+function () {
+        return 'a5.1';
+    }()); // NaN 强制转化后为非数字NaN
+    console.log(+function () {
+        return;
+    }()); // NaN undefined强制转化也为NaN
+
+    // ~ 对返回值进行按位取反
+    // 所有正整数的按位取反是其本身+1的负数
+    // 所有负整数的按位取反是其本身+1的绝对值
+    // 零的按位取反是 -1
+    // 按位取反原理详见下面
+    console.log(~function () {
+        return 5;
+    }()); // -6
+    console.log(~function () {
+        return -5;
+    }()); // 4
+    console.log(~function () {
+        return 0;
+    }()); // -1
+    console.log(~function () {
+        return '5';
+    }()); // -6 按位取反也会对返回值进行强制转换 将字符串5转化为数字5 然后再按位取反
+    console.log(~function () {
+        return '-5';
+    }()); // 4
+    console.log(~function () {
+        return true;
+    }()); // -2 ture会被转化为1
+    console.log(~function () {
+        return false;
+    }()); // -1 false被转化为0
+    console.log(~function () {
+        return 'a';
+    }()); // -1 其他非数字或不能转化为数字类型的返回值 统一当做0处理
+
+    // 括弧() && 异或 逗号等操作符 链接两个对象
+    // 一旦解析器知道其中一个为表达式 被链接的对象视为表达式
+    var test = function () {
+        return 10;
+    }();
+    true && function () {
+        console.log('被关联函数')
+    }();
+    0, function () {
+        console.log('被关联函数')
+    }();
+
+    // 匿名函数传参
+    (function (name) {
+        console.log(name);
+    })('李磊');
+    // 如上等同于如下
+    let fun = function (name) {
+        console.log(name);
+    };
+    // 执行函数
+    fun('李磊');
+
+    // ES6新增了let和const关键字 使得js拥有块级作用域 且使用let和const声明的变量和函数不存在提升现象
+    console.log(e);
+    var e = 3;
+    // 预编译后的代码结构可以看做如下
+    var e; // 将变量e的声明提升至最顶端 赋值逻辑不提升
+    console.log(e); // uneefinee
+    e = 3; // 代码执行到原位置即执行原赋值逻辑
+
+    console.log('-----')
+
+    var e;
+    console.log(e); // uneefinee
+    e = '0';
+    var test = () => {
+        var e; // 全局变量会被局部作用域中的同名变量覆盖
+        console.log(e); // uneefinee
+        e = '1';
+    }
+    test();
+
+    console.log('-----')
+
+    // 函数提升
+    console.log(one); // [function: one]
+    one(); // 0
+    console.log(two); // undefined
+    // two(); // TypeError: two is not a function
+    function one() {
+        console.log('0');
+    };
+    // 函数提升只会提升函数声明 而不会提升函数表达式
+    var two = function () {
+        console.log('2');
+    };
+
+    var e = 1;
+
+    function test() {
+        e = 10;
+        console.log(e);
+        return;
+
+        function e() {
+        };
+    }
+
+    test(); // 10
+    console.log(e); // 1
+
+    // 如上被解析为如下
+
+    var e = 1; // 定义一个全局变量 e
+    function test() {
+        // 首先提升函数声明function e () {}到函数作用域顶端
+        // 然后function e() {} 等同于 var e = function () {};
+        var e = function () {
+        }; // 定义局部变量e 并赋值
+        e = 10; // 修改局部变量e的值 不会影响全局变量e
+        console.log(e); // 打印局部变量e的值 10
+        return;
+    }
+
+    test();
+    console.log(e); // 打印全局变量e的值 1
+
+    alert = function (value) {
+        console.log(value);
+    }
+
+    console.log('%c控制台', 'background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); font-size: 6rem; border-radius: .8rem;');
+
+    // 重写console.log
+    // 方式1
+    console.log = (function (log) {
+        return function () {
+            log.call(console, '%c ♥ ♡ -> %c ' + Array.prototype.slice.call(arguments) + ' '
+                , 'color: #fadfa3; background: #030307; padding:5px 0;border-radius: 4px'
+                , 'background: #fadfa3; padding:5px 0;border-radius: 4px');
+        }
+    })(console.log);
+    // 方式2
+    // let _log = console.log;
+    // console.log = function () {
+    //     _log.call(console, '%c ♥ ♡ -> %c ' + Array.prototype.slice.call(arguments) + ' '
+    //         , 'color: #fadfa3; background: #030307; padding:5px 0;border-radius: 4px'
+    //         , 'background: #fadfa3; padding:5px 0;border-radius: 4px');
+    // };
+
+    console.log('李磊');
+
+    alert('lilei');
+    window.alert('lilei');
+
+    var log = console.log;
+
+    log('李', '磊');
+
+    // 即使使用const数组 数组依然可以被修改 使用freeze可以冰冻对象
+    const arr = [1, 2, 3];
+    // 有些浏览器不兼容freeze函数
+    if (Object.freeze) Object.freeze(arr);
+    // arr.push(4);
+    console.log(arr);
+
+    // caller和callee区别
+    function a1() {
+        // a1.caller必须写在al中 caller只在函数执行时有效
+        console.log(a1.caller.name, 'caller');
+        console.log(arguments.callee.name, 'callee');
+    }
+
+    // 此时如下结果皆为 a1函数中的a1.caller为b1函数 arguments.callee为a1函数
+    function b1() {
+        a1()
+    }
+
+    b1();
+
+    function c1() {
+        b1()
+    }
+
+    c1();
+
+    function d1() {
+        c1()
+    }
+
+    d1();
+
+    function test() {
+        return Array.prototype.slice.call(arguments, 1);
+    }
+
+    console.log(test(1, 2, 3)); // [2, 3]
+
+    // 参数3开始 往后的参数传进参数1函数中
+    setTimeout((a, b) => console.log(a + b), 1000, 1, 2);
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>offset</title>
+    <style>
+        div {
+            height: 80px;
+            color: white;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+<div style="width: 500px"></div>
+<div style="width: 50%"></div>
+<div id="scroll" style="width: 40%;margin-top: 100vh;"></div>
+<script>
+    /**
+     * 每个元素 都有一个offsetParent属性 表示自己的偏移参考盒子
+     * 元素祖先元素中 离自己最近的已经定位的元素 如果自己祖先元素中 无任何盒子进行了定位 offsetParent对象为body
+     *
+     * offsetLeft 元素左边框外 到自己offsetParent对象左边框内的距离
+     * offsetTop 元素上边框外 到自己offsetParent对象左边框内的距离
+     * offsetWidth 元素width+左右padding+左右border宽度
+     * offsetHeight 元素height+上下padding+上下border高度
+     * clientWidth 元素width+左右padding
+     * clientHeight 元素height+上下padding
+     */
+        // 滑动到scroll元素
+    let scroll = document.getElementById('scroll');
+    window.addEventListener('scroll', function () {
+        // 滑动条上方高度
+        let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+        // 浏览器窗口的内部高度
+        let windowHeight = document.documentElement.clientHeight || window.innerHeight || document.body.clientHeight;
+        if (scrollTop > (scroll.offsetTop - windowHeight))
+            console.log('已滑到指定元素');
+    });
+
+    let divs = document.getElementsByTagName('div');
+    for (let i = 0; i < divs.length; i++) {
+        divs[i].innerText = divs[i].offsetWidth;
+    }
+</script>
+</body>
+</html>

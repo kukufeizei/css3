@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>web安全色</title>
+    <style>
+        .item {
+            color: white;
+            text-align: center;
+            width: 10%;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<script>
+    let colors = ['00', '33', '66', '99', 'CC', 'FF'];
+    let length = colors.length;
+    for (let i = 0; i < length; i++) {
+        for (let j = 0; j < length; j++) {
+            for (let k = 0; k < length; k++) {
+                let item = document.createElement('div');
+                item.className = 'item';
+                item.innerHTML = item.style.backgroundColor
+                    = '#' + colors[i] + colors[j] + colors[k];
+                document.body.appendChild(item);
+            }
+        }
+    }
+</script>
+</body>
+</html>

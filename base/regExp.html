@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>validator</title>
+</head>
+<body>
+<form>
+    <p>js正则标志/g /i /m global ignoreCase multiline</p>
+    <p>/g 表示匹配所有 在输入字符串中查找所有匹配 返回结果可能为多个 不加/g只匹配一个</p>
+    <p>/i 表示匹配时不区分大小写</p>
+    <p>/m 表示多行匹配 目标字符串含有\n 且正则表达式含有^或$时 /m修饰符生效</p>
+    <script>
+        /**
+         * exec 匹配字符串 返回一个数组
+         * match 匹配字符串 返回一个数组
+         * test 匹配字符串 成功返回true 失败返回false
+         * search 匹配字符串 成功返回下标 失败返回-1
+         * replace 匹配字符串 并使用新的字符串替换
+         * split 匹配字符串 并以作为切割符分裂成一个数组
+         */
+        let test = 'testtest';
+        document.write('测试数据 => ', test);
+        document.write(' 无g => ', test.match(/test/));
+        document.write(' 有g => ', test.match(/test/g), '<br>');
+        test = 'TestTest';
+        document.write('测试数据 => ', test);
+        document.write(' 无i => ', test.match(/test/));
+        document.write(' 有i => ', test.match(/test/i), '<br>');
+        // 目标字符串含有\n 且正则表达式含有^或$时 /m修饰符生效
+        // test = 'test\ntest';
+        // test = 'test\rtest';
+        test = 'test\r\ntest';
+        // ^ 从字符串开始处匹配 $ 从字符串结束处匹配
+        document.write(' 测试数据 => ', test);
+        document.write(' 无$无^ => ', test.match(/test/g)); // 无 $^但有g时也会匹配多行
+        document.write(' 无m => ', test.match(/test$/g));
+        document.write(' 有m => ', test.match(/^test/gm), '<br>');
+    </script>
+
+    输入内容不超过10
+    <input oninput="if (value.length > 10) value = value.slice(0,10)">
+    <!-- h5写法 -->
+    <!--<input minlength="2" maxlength="10">-->
+    <!--<input type="number" step="0.01">-->
+    <br>
+
+    <!--
+    ^[\u2E80-\u9FFF]+$ 匹配所有东亚区的语言
+    ^[\u4E00-\u9FFF]+$ 匹配简体和繁体
+    ^[\u4E00-\u9FA5]+$ 匹配简体
+    -->
+    输入中文
+    <input onkeyup="value = value.replace(/[^\u4E00-\u9FA5]/g, '')">
+    <br>
+
+    输入英文
+    <input onKeyUp="value = value.replace(/[^a-zA-Z]/g, '')">
+    <br>
+
+    输入数字
+    <input onKeyUp="value = value.replace(/\D/g, '')">
+    <br>
+
+    输入中文 英文
+    <input onkeyup="value = value.replace(/[\d]/g, '')" maxlength="10">
+    <br>
+
+    输入英文 数字
+    <input onKeyUp="value = value.replace(/[\W]/g, '')">
+    <input onKeyUp="value = value.replace(/[^\w\.\/]/ig, '')">
+    <br>
+
+    输入英文 数字 下划线
+    <input onkeyup="value = value.replace(/[^\w_]/g, '')">
+    <br>
+
+    输入中文 英文 数字
+    <input onKeyUp="value = value.replace(/[^\u4e00-\u9fa5]/g, '')">
+    <br>
+
+    输入英文 数字
+    <input onKeyUp="value = value.replace(/[^\d|chun]/g, '')">
+    <br>
+
+    输入小写英文 数字 下划线
+    <input onKeyUp="value = value.replace(/[^a-z0-9_]/g, '')">
+    <br>
+
+    输入数字 小数点
+    <input onKeyUp="value = value.replace(/[^\d.]/g, '')">
+    <br>
+
+    不可输入英文标点符号
+    <input onKeyUp="value = value.replace(/^[^!@#$%^&*()-=+]/g, '')">
+    <br>
+
+    输入数字 不可输入小数点
+    <input onKeyUp="value = value.replace(/\D/g, '')">
+    <br>
+
+    输入数字 可输入小数点
+    <input onkeyup="if (isNaN(value)) execCommand('undo')">
+    <input oninput="if (/\D/g.test(value)) value = value.replace(/\D/g, '')">
+    <br>
+
+    输入数字 小数点后最多两位数字
+    <input onKeyPress="if ((event.keyCode<48 || event.keyCode>57) && event.keyCode!=46 || /\.\d\d$/.test(value)) event.returnValue = false">
+    <br>
+
+    小数点后 有最多两位 数字 字母 中文都可输入 可以输入运算符号
+    <input onkeyup="value = value.replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3')">
+
+    <button>提交</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>two.js</title>
+</head>
+<body>
+<div id="draw">
+
+</div>
+<script src="https://cdn.bootcss.com/two.js/0.6.0/two.min.js"></script>
+<script>
+    let ele = document.getElementById('draw');
+    let sty = {width: 400, height: 400}; // 设置二维空间的宽高
+    let two = new Two(sty).appendTo(ele); // 新建一个在div中的二维空间
+
+    let circle = two.makeCircle(-72, 0, 50); // 创建圆形 x坐标 y坐标 半径
+    let star = two.makeStar(75, 0, 75, 35, 5); // 创建五角星 x坐标 y坐标 内半径 外半径 几角星
+
+    // 设置不同的样式属性
+    circle.fill = '#ccd0d5';  // 填充色
+    circle.stroke = '#d3c294'; // 边线颜色
+    circle.linewidth = 5; // 边线的宽度
+
+    star.fill = '#009688'; // 填充色
+    star.opacity = 0.5; // 透明度
+    star.noStroke(); // 去掉边线
+    two.update(); // 将生成的空间 图形投射到网页上
+
+    let group = two.makeGroup(circle, star);
+    // 组可将多个图形合并到一个组中 一个组可以设置相同的属性与效果
+    group.translation.set(two.width / 2, two.height / 2);
+    // 让一个组内所有的形状位移，使中心保持在二维空间的什么位置
+    group.rotation = Math.PI; // 以组中心旋转默认值180
+    group.scale = 0;//统一设置缩放 1~0
+    group.linewidth = 7; // 如果有边线的统一设置线宽
+    group.opacity = 1; // 透明度
+    two.update(); // 将生成的空间 图形投射到网页上
+
+    /**
+     * bind可以绑定一个函数来在函数中表达动画属性
+     * 参数1为监听事件名称 参数2为调用函数 函数中参数为帧数
+     * 每调用一次 执行一次two.update() 帧数为每秒60次即每秒钟执行60次
+     */
+    two.bind('update', function (frameCount) {
+        // console.log(frameCount);
+        if (group.scale > 0.9999) {
+            group.scale = group.rotation = 0
+            // 使缩放与回转变成0 就是初始位置
+        }
+        // 随着缩放的增大而减小 缩放可以到1时如上代码会把time变成0
+        let time = (1 - group.scale) * 0.125;
+        // 使缩放不断+=time 由于缩放的增大 缩放近似1时 缩放停止 上面time会逐渐减小 缩放速度会一点点减慢
+        group.scale += time;
+        // 回转幅度不断+=time的4倍(math.pi是180度)
+        group.rotation += time * 4 * Math.PI;
+    }).play();  // 启动动画
+</script>
+</body>
+</html>

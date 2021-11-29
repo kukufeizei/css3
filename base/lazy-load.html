@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图片懒加载</title>
+    <style>
+        img {
+            display: block;
+            width: 100%;
+            height: 100vh;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<input type="button" value="图片预加载" onclick="loadImage('../static/image/image2.png', () => console.log('ok'))">
+<img data-src="../static/image/image1.png">
+<img data-src="../static/image/image2.png">
+</body>
+<script>
+    let imgs = document.querySelectorAll('img');
+
+    // offsetTop是元素与offsetParent的距离 循环获取直到页面顶部
+    function getTop(e) {
+        let top = e.offsetTop;
+        while (e = e.offsetParent) {
+            top += e.offsetTop;
+        }
+        return top;
+    }
+
+    function lazyLoad(imgs) {
+        let h = document.documentElement.clientHeight; // 获取可视区域高度
+        let s = document.documentElement.scrollTop || document.body.scrollTop;
+        for (let i = 0; i < imgs.length; i++) {
+            if (h + s > getTop(imgs[i])) {
+                imgs[i].src = imgs[i].getAttribute('data-src');
+            }
+        }
+    }
+
+    // 用来判断bound.top <= clientHeight的函数 返回一个bool值
+    function isIn(img) {
+        let bound = img.getBoundingClientRect();
+        let clientHeight = window.innerHeight;
+        return bound.top <= clientHeight;
+    }
+
+    // 检查图片是否在可视区内 如不在则加载
+    function check() {
+        Array.from(imgs).forEach(function (img) {
+            if (isIn(img)) {
+                loadImg(img);
+            }
+        })
+    }
+
+    function loadImg(img) {
+        if (!img.src) {
+            let source = img.dataset.src;
+            img.src = source;
+        }
+    }
+
+    // onload和onscroll指向同一个函数
+    /*window.onload = */window.onscroll = function () { //onscroll()在滚动条滚动的时候触发
+        // lazyLoad(imgs); // 第一种懒加载方式
+        check(); // 第二种懒加载方式
+    }
+
+    // 预加载图片
+    function loadImage(url, callback) {
+        let img = new Image(); // 创建一个Image对象 实现图片的预下载
+        img.src = url;
+        // 如浏览器开启禁用缓存complete一直为false
+        if (img.complete) { // 如果图片已经存在于浏览器缓存 直接调用回调函数
+            callback.call(img);
+            console.log(666);
+            return; // 直接返回 不用再处理onload事件
+        }
+        img.onload = function () { // 图片下载完毕时异步调用callback函数
+            // 将回调函数的this替换为Image对象 如果你直接用img.width的时候 图片还没有完全下载下来
+            console.log(555);
+            callback.call(img);
+        };
+    }
+
+    window.onload = () => {
+        // lazyLoad(imgs);
+        check();
+    }
+</script>
+</html>

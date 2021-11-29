@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>轮播图</title>
+    <!-- fontawesome字体库 -->
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .banner {
+            width: 1000px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel img {
+            width: 1000px;
+            height: 300px;
+            position: absolute;
+            left: 1000px;
+        }
+
+        .carousel img:nth-child(1) {
+            left: 0;
+        }
+
+        .action {
+            color: coral;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .action > i {
+            position: absolute;
+            top: 140px;
+            width: 40px;
+            height: 24px;
+            border: none;
+            border-radius: 4px;
+            background: rgba(200, 200, 200, 0.5);
+            z-index: 99;
+        }
+
+        #left {
+            left: 0
+        }
+
+        #right {
+            right: 0
+        }
+    </style>
+</head>
+<body>
+<div class="banner">
+    <div class="carousel">
+        <img src="../../static/image/image1.png">
+        <img src="../../static/image/image2.png">
+        <img src="../../static/image/cool1.gif">
+        <img src="../../static/image/cool2.gif">
+    </div>
+    <div class="action">
+        <i id="left" class="fa fa-angle-left"></i>
+        <i id="right" class="fa fa-angle-right"></i>
+    </div>
+</div>
+</body>
+<script>
+    function move(ele, json, callback) {
+        clearInterval(ele.interval);
+        ele.interval = setInterval(() => {
+            let flag = true;
+            for (let i in json) {
+                let iNow = parseInt(getStyle(ele, i));
+                let speed = (json[i] - iNow) / 6;
+                speed = speed < 0 ? Math.floor(speed) : Math.ceil(speed);
+                if (iNow != json[i]) {
+                    flag = false;
+                }
+                ele.style[i] = iNow + speed + 'px';
+            }
+            if (flag) {
+                clearInterval(ele.interval);
+                callback && callback();
+            }
+        }, 30);
+    }
+
+    function getStyle(ele, attr) {
+        if (ele.currentStyle) {
+            return ele.currentStyle[attr];
+        } else {
+            return getComputedStyle(ele, false)[attr];
+        }
+    }
+
+    function Banner() {
+        this.left = document.getElementById('left');
+        this.right = document.getElementById('right');
+        this.carousel = document.querySelector('.carousel');
+        this.img = this.carousel.children;
+
+        this.index = 0;
+        // 设置要走的索引
+        this.iPrev = this.img.length - 1;
+
+        this.init();
+    }
+
+    Banner.prototype.init = function () {
+        let that = this;
+        this.right.onclick = function () {
+            that.changeIndex();
+        }
+    }
+    Banner.prototype.changeIndex = function () {
+        if (this.index == this.img.length - 1) {
+            this.index = 0;
+            // 当要进来的是第0张时 走的是最后一张
+            this.iPrev = this.img.length - 1
+        } else {
+            this.index++;
+            // 正常情况下 走的都是进来的上一张 上一张为当前-1
+            this.iPrev = this.index - 1;
+        }
+        this.display();
+    }
+    Banner.prototype.display = function () {
+        // 根据要走的和要进来的索引
+        // 先设置初始位置 然后再开始走(move)
+
+        // 要走的 this.img[this.iPrev]
+        this.img[this.iPrev].style.left = 0;
+        move(this.img[this.iPrev], {left: -this.img[0].offsetWidth});
+
+        // 要进来的 this.img[this.index]
+        this.img[this.index].style.left = this.img[0].offsetWidth + 'px';
+        move(this.img[this.index], {left: 0});
+    }
+
+    new Banner();
+</script>
+</html>

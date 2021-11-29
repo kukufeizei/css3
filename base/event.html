@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>event</title>
+    <style>
+        #one {
+            text-align: center;
+            width: 300px;
+            height: 300px;
+            color: white;
+            background-color: black;
+        }
+
+        #two {
+            width: 200px;
+            height: 200px;
+            background-color: grey;
+        }
+
+        #three {
+            width: 100px;
+            height: 100px;
+            color: black;
+            background-color: white;
+        }
+
+        #ul {
+            list-style: khmer;
+            font-size: 24px;
+        }
+
+        #ul::after {
+            content: 'ul的文本';
+        }
+    </style>
+</head>
+<body>
+<div id="one">
+    <div id="two">
+        <div id="three">
+            three
+        </div>
+        two
+    </div>
+    one
+</div>
+
+<button id="btn1" onclick="btn1()">btn1</button>
+<button id="btn2">btn2</button>
+<button id="btn3">btn3</button>
+<button id="btn4" value="添加">btn4</button>
+<ul id="ul">
+    <li>文本</li>
+</ul>
+
+<script>
+    // https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget
+
+    /**
+     * 事件绑定
+     * dom元素中绑定
+     * js中绑定
+     * js绑定事件监听
+     * 事件监听可绑定多个事件 但绑定的事件会被覆盖
+     */
+    function btn1() {
+        console.log('btn1');
+    }
+
+    document.getElementById('btn2').onclick = function () {
+        console.log('btn2');
+    }
+
+    // 移除事件绑定 赋值空函数或null
+    // document.getElementById('btn2').onclick = function () {
+    // }
+    // document.getElementById('btn2').onclick = null;
+
+    /**
+     * js事件监听 ie8以下不支持
+     * element.addEventListener(event, function, useCapture)
+     * event(必需) 事件名 function(必需) 触发函数 useCapture(可选) 执行时机 true捕获 false冒泡(默认)
+     * element.removeEventListener('click', function, useCapture);
+     * 同一个监听事件可分别为事件捕获和事件冒泡注册 两次事件需要分别移除
+     */
+    const btn3 = document.getElementById('btn3');
+    btn3.addEventListener('click'
+        // 此处使用'()=>{}'函数下面无法获取arguments
+        , function (e) {
+            console.log('btn3');
+            if (1 === 1) {
+                // 删除匿名方法
+                this.removeEventListener(e.type, arguments.callee, false);
+            }
+        }
+    );
+
+    ///// ///// ///// ///// /////
+
+    let btn4 = document.getElementById('btn4');
+    let ul = document.getElementById('ul');
+
+    /**
+     * 事件委托 利用事件冒泡 子孙的事件被委托到父元素上触发执行
+     * 提高性能 每个函数都会占用内存 使用一个事件委托函数代理可代理所有事件
+     * 动态监听 添加的子元素具有相同事件
+     * @type {HTMLElement}
+     */
+    ul.onmouseover = function (event) {
+        // event在ie中为全局变量 在firefox中需使用参数引导使用
+        event = event || window.event;
+        console.log(event.target, 'target');
+        console.log(event.srcElement, 'srcElement');
+        console.log(event.currentTarget, 'currentTarget');
+        // ie支持srcElement firefox支持target
+        let target = event.target || event.srcElement;
+        if (target.nodeName === 'LI' || target.nodeName === 'UL') {
+            target.style.backgroundColor = '#ff0000';
+        }
+    };
+    ul.onmouseout = function (event) {
+        event = event || window.event;
+        let target = event.target || event.srcElement;
+        if (target.nodeName === 'LI' || target.nodeName === 'UL') {
+            target.style.backgroundColor = '#fff';
+        }
+    };
+
+    // 添加新节点
+    btn4.onclick = function () {
+        let li = document.createElement('li');
+        li.innerHTML = '文本';
+        ul.appendChild(li);
+    };
+
+    /**
+     * 元素属性事件和on事件同时存在时 on事件会覆盖元素属性事件
+     * 首先执行元素属性事件 on事件和addEventListener按代码顺序执行
+     */
+    ///// ///// ///// ///// /////
+
+    // 阻止冒泡行为
+    function stopBubble(e) {
+        // 如事件对象存在 则当前为非ie浏览器
+        if (e && e.stopPropagation)
+            e.stopPropagation();
+        else
+        // ie中阻止冒泡行为方式
+            window.event.cancelBubble = true;
+    }
+
+    // 阻止浏览器默认行为
+    function stopDefault(e) {
+        // 非ie中阻止默认行为方式
+        if (e && e.preventDefault)
+            e.preventDefault();
+        // ie中阻止默认行为方式
+        else
+            window.event.returnValue = false;
+        return false;
+    }
+
+    function $(id) {
+        return document.getElementById(id);
+    }
+
+    function on(id, eventName, handler, useCapture) {
+        if (addEventListener) {
+            $(id).addEventListener(eventName, handler, useCapture);
+        } else {
+            $(id).attachEvent('on' + eventName, handler);
+        }
+    }
+
+    on('one', 'click', one1, true);
+    on('two', 'click', two1, true);
+    on('three', 'click', three1, true);
+    on('one', 'click', one2, false);
+    on('two', 'click', two2, false);
+    on('three', 'click', three2, false);
+
+    function one1() {
+        console.log('one捕获');
+    }
+
+    function two1() {
+        console.log('two捕获');
+    }
+
+    function three1() {
+        console.log('three捕获');
+    }
+
+    function one2() {
+        console.log('one冒泡');
+    }
+
+    function two2() {
+        console.log('two冒泡');
+    }
+
+    function three2() {
+        console.log('three冒泡');
+    }
+
+    // 查看元素已有事件 chrome控制台调试可用 写在页面中会报错
+    // 结果中点击 事件名 => listener => [[FuntionLocation]] -> 函数
+    // getEventListeners(document.getElementById('btn3'))
+</script>
+</body>
+</html>

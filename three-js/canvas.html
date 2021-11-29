@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8'>
+    <title>canvas</title>
+    <style>
+        canvas {
+            width: 100%;
+            height: 90vh;
+            background: antiquewhite;
+        }
+    </style>
+</head>
+<body>
+<canvas id='canvas'></canvas>
+<script>
+    /**
+     * 绘制多边形
+     * @param c context
+     * @param n 边的数量
+     * @param x 横坐标
+     * @param y 纵坐标
+     * @param r 面积
+     * @param angle 旋转角度
+     * @param counterclockwise 顺时针|逆时针
+     */
+    function polygon(c, n, x, y, r, angle, clockwise) {
+        angle = angle || 0;
+        clockwise = clockwise || false;
+        c.moveTo(x + r * Math.sin(angle), // 从第一个顶点开始一条新的子路径
+            y - r * Math.cos(angle)); // 使用三角法计算位置
+        let delta = 2 * Math.PI / n; // 两个顶点之间的夹角
+        for (let i = 1; i < n; i++) { // 循环剩余的每个顶点
+            angle += clockwise ? delta : -delta; // 调整角度
+            c.lineTo(x + r * Math.sin(angle), // 以下个顶点为端点添加线段
+                y - r * Math.cos(angle));
+        }
+        c.closePath(); // 将最后一个顶点和起点连接起来
+    }
+
+    let context = document.getElementById('canvas').getContext('2d');
+
+    // 开始一个新的路径并添加一条多边形子路径
+    context.beginPath();
+    polygon(context, 3, 20, 70, 20); // 三角形
+    polygon(context, 4, 60, 60, 20, Math.PI / 4); // 正方形角形
+    polygon(context, 5, 100, 55, 20); // 五角形
+    polygon(context, 6, 140, 53, 20, Math.PI / 6); // 六角形
+    polygon(context, 4, 180, 53, 20, Math.PI / 4, true); // 六边形中的小正方形
+
+    // 设置属性来控制图形外观
+    context.fillStyle = '#ccc'; // 内部使用浅灰色
+    context.strokeStyle = '#008'; // 深蓝色外边框
+    context.lineWidth = 2; // 2个像素宽
+
+    // 调用如下函数绘制所有这些多边形 每个分别定义在自己的子路径中
+    context.fill();
+    context.stroke();
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>center</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-size: 0;
+        }
+
+        .bg {
+            float: left;
+            font-size: 50px;
+            position: relative;
+            width: calc(100% / 3);
+            height: 100%;
+            vertical-align: top;
+        }
+
+        .bg:nth-child(1) {
+            background-color: red;
+        }
+
+        .bg:nth-child(1) > .center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .bg:nth-child(2) {
+            background-color: green;
+        }
+
+        .bg:nth-child(2) > .center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .bg:nth-child(3) {
+            background-color: blue;
+            display: table;
+        }
+
+        .bg:nth-child(3) > .center {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="bg">
+    <div class="center">
+        文本
+    </div>
+</div>
+<div class="bg">
+    <div class="center">
+        文本
+    </div>
+</div>
+<div class="bg">
+    <div class="center">
+        文本
+    </div>
+</div>
+</body>
+</html>

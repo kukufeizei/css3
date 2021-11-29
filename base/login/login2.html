@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>login</title>
+    <style>
+        body {
+            background-color: #0080bb;
+        }
+
+        input, button {
+            /* 取消点击补助框 */
+            outline: none;
+            /* ios点击后取消阴影
+             * -webkit      ios浏览器
+             * -tap         点击
+             * -highlight   背景高亮
+             * -color       颜色
+             * rgba(0,0,0,0) = transparent 作用相同(纯黑透明)
+             */
+            /*-webkit-tap-highlight-color: transparent;*/
+        }
+
+        /*.input:focus {*/
+        /*    border: 2px solid #39a79f;*/
+        /*    box-shadow: 0px 0px 10px 0px rgba(184, 186, 194, 0.5);*/
+        /*}*/
+
+        input:focus {
+            border-color: white;
+            -webkit-box-shadow: 0 0 4rem rgba(255, 255, 255, 1);
+            box-shadow: 0 0 4rem rgba(255, 255, 255, 1);
+        }
+
+        .title {
+            position: absolute;
+            margin-top: 5rem;
+            left: 10%;
+            font-size: 5rem;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .input {
+            position: absolute;
+            width: 80%;
+            height: 9.4rem;
+            line-height: 50px;
+            left: 10%;
+            border: 2px solid #ffc2da;
+            border-radius: 25px;
+        }
+
+        .account-input {
+            border-radius: 1.2rem;
+            padding-left: 2.6rem;
+            color: white;
+            width: 58%;
+            height: 6rem;
+            font-size: 2.2rem;
+            position: absolute;
+            left: 34%;
+            border: 0.2rem;
+            margin-top: 1.4rem;
+            background-color: rgba(0, 0, 0, 0);
+        }
+
+        .input.account {
+            margin-top: 34rem;
+        }
+
+        .input.password {
+            margin-top: 46rem;
+        }
+
+        .icon {
+            width: 20px;
+            color: white;
+            margin: 13px 0 0 10%;
+        }
+
+        .account-text {
+            position: absolute;
+            left: calc(10% + 32px);
+            color: #fefefe;
+            margin-top: -54px;
+            font-size: 2.2rem;
+            line-height: 10rem;
+        }
+
+        .login {
+            border: none;
+            position: absolute;
+            left: 10%;
+            margin-top: 58rem;
+            width: 80%;
+            height: 9rem;
+            background-color: #f9f9f9;
+            border-radius: 25px;
+            color: #e4277d;
+            font-size: 2.2rem;
+        }
+
+        #remember-me {
+            position: absolute;
+            left: 11%;
+            margin-top: 69rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .remember-me-text {
+            position: absolute;
+            left: 20%;
+            margin-top: 68.8rem;
+            font-size: 2.2rem;
+            color: #f9f9f9;
+        }
+
+        /* placeholder开始 */
+        input::-webkit-input-placeholder {
+            color: #efe9e5;
+        }
+
+        input::-moz-placeholder { /* Mozilla Firefox 19+ */
+            color: #efe9e5;
+        }
+
+        input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+            color: #efe9e5;
+        }
+
+        input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+            color: #efe9e5;
+        }
+
+        /* placeholder结束 */
+
+        /*check开始*/
+        input[type=radio], input[type=checkbox] {
+            display: inline-block;
+            /* 去除浏览器默认样式 */
+            -webkit-appearance: none;
+            background-color: transparent;
+            /* 手机端必须设置 */
+            border: none;
+        }
+
+        /* 选中前 */
+        input[type=checkbox]:after {
+            content: '';
+            display: block;
+            width: 2.8rem;
+            height: 2.8rem;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 14px;
+            font-size: 2.2rem;
+            color: #fff;
+            background-color: #fff;
+            box-sizing: border-box;
+        }
+
+        /* 选中后 */
+        input[type=checkbox]:checked:after {
+            color: #e61673;
+            padding: 0.86rem;
+            content: "L";
+            transform: matrix(-0.766044, -0.642788, -0.642788, 0.766044, 0, 0);
+            -webkit-transform: matrix(-0.766044, -0.642788, -0.642788, 0.766044, 0, 0);
+        }
+    </style>
+</head>
+<body>
+<div class="title">李磊<br>系统</div>
+<div class="input account">
+    <i class="to to-user icon"></i>
+    <div class="account-text">账号</div>
+    <input type="text" class="account-input" id="userName" placeholder="请输入账号">
+</div>
+<div class="input password">
+    <i class="to to-password icon"></i>
+    <div class="account-text">密码</div>
+    <input type="password" class="account-input" id="password" placeholder="请输入密码">
+</div>
+<button class="login" onclick="login()">立即登录</button>
+
+<input type="checkbox" id="remember-me">
+<span class="remember-me-text">记住我</span>
+
+<script src="https://www.layuicdn.com/layui/layui.js"></script>
+<script>
+    /** 自动更改font-size */
+    let fontSize = 14; // 定义1rem对应的px值
+    (function () {
+        const newRem = function () {
+            const html = document.documentElement;
+            html.style.fontSize = fontSize / (html.getBoundingClientRect().width / 100) + 'vw';
+            console.log(html.getBoundingClientRect().width)
+        };
+        window.addEventListener('resize', newRem, false);
+        newRem();
+    })();
+
+    layui.use(['layer'], function () {
+        let layer = layui.layer,
+            $ = layui.$;
+        window.login = function () {
+
+            let userName = $('#userName').val();
+            let password = $('#password').val();
+
+            if (userName.trim() === '') {
+                layer.msg('用户名不能为空');
+                return;
+            }
+
+            if (password.trim() === '') {
+                layer.msg('密码不能为空', {
+                    time: 5000 // 2秒关闭(默认3秒)
+                }, function () {
+                });
+                return;
+            }
+
+            $.ajax({
+                type: 'post',
+                async: false,
+                data: {
+                    'userName': userName
+                    , 'password': password
+                    , 'rememberMe': $('#remember-me').checked
+                },
+                url: "/login",
+                success: function (data) {
+                    if (data.state == true) {
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        location.href = '/';
+                    } else {
+                        layer.msg(data.message, {
+                            time: 5000 // 5秒关闭(默认3秒)
+                        }, function () {
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    // input键盘焦点问题修复
+    window.addEventListener('resize', () => {
+        const activeElement = document.activeElement;
+        if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA') {
+            setTimeout(() => {
+                activeElement.scrollIntoView()
+            }, 100)
+        }
+    })
+</script>
+
+</body>
+</html>

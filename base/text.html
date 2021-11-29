@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>text</title>
+    <style>
+        /* 文字三行显示省略号 */
+        p {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            text-overflow: ellipsis;
+            -webkit-box-orient: vertical;
+        }
+
+        .show {
+            -webkit-line-clamp: 10000;
+        }
+
+        p::selection {
+            background: pink;
+        }
+    </style>
+</head>
+<body>
+<p></p>
+<button>show</button>
+<script>
+    let text = '';
+    for (let i = 0; i < 400; i++) {
+        text += '文本';
+    }
+
+    let p = document.getElementsByTagName('p')[0];
+
+    p.innerText = text;
+
+    document.getElementsByTagName('button')[0].onclick = function () {
+        if (this.innerText === 'show') {
+            p.classList.add('show');
+            this.innerText = "hide";
+        } else {
+            p.classList.remove('show');
+            this.innerText = 'show';
+        }
+    }
+</script>
+</body>
+</html>

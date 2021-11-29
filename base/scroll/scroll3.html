@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>scroll</title>
+    <style>
+        .button {
+            top: 0;
+            position: fixed;
+        }
+
+        .item {
+            width: 10rem;
+            height: 10rem;
+            border-radius: 50%;
+            margin-top: 120vh;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="button">
+    <input type="button" id="btn1" value="btn1">
+    <input type="button" id="btn2" value="btn2">
+    <input type="button" id="btn3" value="btn3">
+</div>
+<div class="item"></div>
+<script>
+    const item = document.querySelector('.item');
+
+    // https://developer.mozilla.org/zh-CN/docs/Web/API/Element/scrollIntoView
+    document.getElementById('btn1').onclick = function () {
+        item.scrollIntoView(/*true*/); // 默认参数为true
+    };
+    document.getElementById('btn2').onclick = function () {
+        item.scrollIntoView(false);
+    };
+    document.getElementById('btn3').onclick = function () {
+        item.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'});
+    };
+</script>
+</body>
+</html>

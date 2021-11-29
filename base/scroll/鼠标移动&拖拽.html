@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>鼠标移动&拖拽</title>
+    <style>
+        .content {
+            width: 400px;
+            height: 400px;
+            border: 1px solid #000000;
+            position: relative;
+            left: 100px;
+            top: 100px;
+        }
+
+        #move1 {
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 0, 0, 0.4);
+            position: absolute;
+            display: none;
+        }
+
+        #move2 {
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            left: 600px;
+            top: 108px;
+            background-color: pink;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div id="move1"></div>
+</div>
+
+<div id="move2" onmousemove="moveFun2(this)" onmouseup="up()"></div>
+<script>
+    /**
+     * mouseenter和mouseleave一起使用
+     * mouseenter 第一次进入元素时触发
+     * mouseleave 鼠标移动到元素之外时触发
+     * mouseover和mouseout一起使用
+     * mouseover 当鼠标从一个元素移入另一个元素时触发
+     * mouseout 鼠标移出一个元素 移入另一个元素时触发
+     *
+     * mousemove 鼠标在元素内部移动时触发 不断地重复触发
+     *
+     * mouseout和mouseleave的区别
+     * mouseout在鼠标离开该元素或该元素的子元素时都会触发 mouseleave只会在离开该元素时触发
+     * mouseover和mouseenter的区别
+     * mouseover在鼠标进入该元素或该元素的子元素时都会触发 mouseenter只会在进入该元素时触发
+     */
+    let content = document.querySelector('.content');
+    move1 = document.querySelector('#move1');
+    content.addEventListener('mouseenter', () => {
+        move1.style.display = 'block';
+        content.addEventListener('mousemove', mouseMove)
+
+    });
+    content.addEventListener('mouseleave', () => {
+        move1.style.display = 'none';
+        content.removeEventListener('mouseleave', mouseMove);
+    });
+
+    function mouseMove(e) {
+        let range = content.getBoundingClientRect();
+        move1.style.left = e.clientX - move1.offsetWidth / 2 - range.left + 'px';
+        move1.style.top = e.clientY - move1.offsetHeight / 2 - range.top + 'px';
+
+        if (move1.offsetLeft <= 0) {
+            move1.style.left = '0px';
+        }
+        if (move1.offsetTop <= 0) {
+            move1.style.top = '0px';
+        }
+        if (move1.offsetLeft >= content.clientWidth - move1.clientWidth) {
+            move1.style.left = content.clientWidth - move1.clientWidth + 'px';
+        }
+        if (move1.offsetTop >= content.clientHeight - move1.clientHeight) {
+            move1.style.top = content.clientHeight - move1.clientHeight + 'px';
+        }
+    }
+
+    // 定义变量储存div的宽高
+    let width, height;
+    // 定义一个变量判断是否执行移动函数
+    let mouseDown = false;
+
+    // 鼠标按下函数
+    const move2 = document.getElementById('move2');
+    move2.onmousedown = function () {
+        // 获取move2的宽高
+        width = move2.offsetWidth;
+        height = move2.offsetHeight;
+        // 鼠标
+        let e = event || window.event;
+        // e.clientX/Y 是获取鼠标相对浏览器的位置 将div中心自动居中到鼠标
+        move2.style.left = (e.clientX - width / 2) + 'px';
+        move2.style.top = (e.clientY - height / 2) + 'px';
+        console.log(move2.style.left, move2.style.top);
+        mouseDown = true;
+    }
+
+    // 鼠标移动函数
+    move2.onmousemove = function (event) {
+        width = move2.offsetWidth;
+        height = move2.offsetHeight;
+        let e = event || window.event;
+        if (mouseDown) {
+            move2.style.left = (e.clientX - width / 2) + 'px';
+            move2.style.top = (e.clientY - height / 2) + 'px';
+        }
+    }
+
+    // 鼠标松开函数
+    move2.onmouseup = function up() {
+        mouseDown = false;
+    }
+</script>
+</body>
+</html>

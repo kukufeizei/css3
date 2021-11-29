@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>天气</title>
+    <link href="//at.alicdn.com/t/font_1735445_b9kxoozd2fw.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .clear::after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            background-color: #424242;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 750px;
+            height: 435px;
+            background-color: #222831;
+            border-radius: 25px;
+            box-shadow: 0 0 70px -10px rgba(0, 0, 0, 0.2);
+            color: #fff;
+        }
+
+        .weather-side {
+            position: relative;
+            width: 300px;
+            height: 100%;
+            border-radius: 25px 0 0 25px;
+            box-shadow: 0 0 35px -10px rgba(0, 0, 0, 0.2);
+            float: left;
+        }
+
+        .gradient {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-image: linear-gradient(135deg, #72edf1 10%, #5151e6 100%);
+            border-radius: 25px 0 0 25px;
+            opacity: .8;
+            position: absolute;
+        }
+
+        .date-container {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+        }
+
+        .day {
+            display: block;
+            margin-top: 4px;
+        }
+
+        .location {
+            display: block;
+            margin-top: 4px;
+        }
+
+        .weather-container {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+        }
+
+        #weather-icon {
+            font-size: 70px;
+        }
+
+        .weather-temp {
+            font-size: 4em;
+            font-weight: bold;
+        }
+
+        .weather-desc {
+            font-size: 20px;
+        }
+
+        .info-side {
+            float: right;
+            padding-top: 25px;
+            margin-right: 10px;
+            height: 100%;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .today-info {
+            padding: 15px 15px 0 15px;
+            margin: 0 25px 25px 25px;
+            box-shadow: 0 0 50px -5px rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+        }
+
+        .today-info div {
+            margin-bottom: 10px;
+        }
+
+        .today-info .title {
+            float: left;
+        }
+
+        .today-info .value {
+            float: right;
+        }
+
+        .week-list {
+            margin: 10px 35px;
+            border-radius: 10px;
+            box-shadow: 0 0 50px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        .week-list li {
+            float: left;
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 10px;
+            text-align: center;
+            transition: 200ms;
+            z-index: 100;
+        }
+
+        .week-list li span {
+            display: block;
+        }
+
+        .week-list li:hover {
+            transform: scale(1.1);
+            background-color: #fff;
+            color: #222831;
+        }
+
+        .active {
+            background-color: #fff;
+            color: #222831;
+        }
+
+        .week-list .day-name {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .week-list .day-temp {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .location-container {
+            padding: 25px 35px;
+            position: relative;
+        }
+
+        .location-container input {
+            outline: none;
+            width: 300px;
+            height: 28px;
+            padding: 6px;
+            display: block;
+            box-sizing: border-box;
+            position: absolute;
+            bottom: -135px;
+            left: calc(50% - 150px);
+            border: none;
+            color: #222831;
+            border-radius: 5px;
+        }
+
+        .location-container button {
+            outline: none;
+            width: 320px;
+            padding: 8px;
+            box-sizing: border-box;
+            border: none;
+            color: #fff;
+            background-image: linear-gradient(135deg, #72edf1 10%, #5151e6 100%);
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 0 40px -5px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: 200ms;
+            position: absolute;
+            bottom: -195px;
+            left: calc(50% - 160px);
+        }
+
+        .location-container button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 左边 -->
+    <div class="weather-side">
+
+        <!-- 渐变 -->
+        <div class="gradient"></div>
+        <div class="date-container">
+            <h2 class="country" id="country">中国</h2>
+            <span class="weather location" id="cityText">上海</span>
+            <span class="day" id="day">xxxx-xx-xx</span>
+        </div>
+
+        <div class="weather-container">
+            <!-- 天气图标 -->
+            <span class="weather qing" id="weather-icon"></span>
+            <div class="weather-temp" id="weather-temp">0℃</div>
+            <div class="weather-desc" id="weather-desc">晴天</div>
+        </div>
+    </div>
+
+    <!-- 右边 -->
+    <div class="info-side">
+        <div class="today-info-container">
+            <div class="today-info">
+                <div class="wind clear">
+                    <span class="title">风力等级</span>
+                    <span class="value" id="wind">0</span>
+                </div>
+                <div class="humidity clear">
+                    <span class="title">湿度</span>
+                    <span class="value" id="humidity">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="week-container">
+            <ul class="week-list">
+                <li class="active" id="day1">
+                    <span class="weather qing"></span>
+                    <span class="day-name">星期一</span>
+                    <span class="day-temp">0℃</span>
+                </li>
+
+                <li id="day2">
+                    <span class="weather qing"></span>
+                    <span class="day-name">星期二</span>
+                    <span class="day-temp">0℃</span>
+                </li>
+
+                <li id="day3">
+                    <span class="weather qing"></span>
+                    <span class="day-name">星期三</span>
+                    <span class="day-temp">0℃</span>
+                </li>
+
+                <li id="day4">
+                    <span class="weather qing"></span>
+                    <span class="day-name">星期四</span>
+                    <span class="day-temp">0℃</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="location-container">
+            <input placeholder="位置" id="city">
+            <button class="location-button" id="location-button">
+                <span class="weather search">查询</span>
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    const country = document.getElementById('country');
+    const cityText = document.getElementById('cityText');
+    const day = document.getElementById('day');
+    // 天气图标
+    const weatherIcon = document.getElementById('weather-icon');
+    const weatherTemp = document.getElementById('weather-temp');
+    const weatherDesc = document.getElementById('weather-desc');
+
+    function weather(data) {
+        console.log(data, 'weather');
+
+        country.textContent = data.country;
+        day.textContent = '今天 ' + data.update_time.substr(0, 10);
+        cityText.textContent = data.city;
+
+        const now = data.data[0];
+        weatherIcon.className = 'weather ' + now.wea_img;
+        weatherTemp.textContent = now.tem;
+        weatherDesc.textContent = now.wea;
+
+        let humidity = document.getElementById('humidity');
+        humidity.textContent = now.humidity;
+        let wind = document.getElementById('wind');
+        wind.textContent = now.win.join('-');
+
+        const weekList = document.querySelector('.week-list').children;
+        for (let i = 1; i < 4; i++) {
+            const week = weekList[i];
+            let items = week.children;
+            items[0].className = 'weather ' + data.data[i].wea_img;
+            items[1].textContent = data.data[i].week;
+            items[2].textContent = `${data.data[i].tem1}~${data.data[i].tem2}`;
+        }
+    }
+
+    const weatherApi = 'https://www.tianqiapi.com/api/?version=v1&&appid=1001&appsecret=5566';
+
+    let city = document.getElementById('city');
+
+    // 默认查询本地天气
+    let script = document.createElement('script');
+    script.src = `${weatherApi}&callback=weather`;
+    document.body.appendChild(script);
+    document.getElementById('location-button').onclick = function () {
+        // 判断输入内容是否为空
+        if (city.value) {
+            let script = document.createElement('script');
+            script.src = `${weatherApi}&city=${city.value}&callback=weather`;
+            document.body.appendChild(script);
+        } else {
+            alert('请输入城市名称');
+        }
+    }
+</script>
+</body>
+</html>

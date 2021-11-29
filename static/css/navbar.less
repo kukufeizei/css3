@@ -1,0 +1,41 @@
+@import "base";
+
+.content > li {
+  width: calc((100% - 12px) / 6);
+  line-height: 40px;
+  border: 1px solid #e61673;
+  /* 未被选中 */
+  color: #e61673;
+  background-color: #fff;
+}
+
+/* 选中 .content > .on增加css选择器权重 */
+.content > .on {
+  color: #fff;
+  background-color: #e61673;
+}
+
+div {
+  border: 1px solid red;
+}
+
+/* 注意此处的margin-top值并未更新 */
+.one {
+  .pxToRem;
+  height: calc(@result / 2);
+  .pxToRem(28);
+  margin-top: @result;
+}
+
+/* 此处的margin-top值已更新 */
+.two {
+  & {
+    .pxToRem;
+    height: calc(@result / 2);
+  }
+
+  & {
+    .pxToRem(28);
+    margin-top: @result;
+  }
+}

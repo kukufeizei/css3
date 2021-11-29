@@ -1,0 +1,58 @@
+@charset "utf-8";
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /**
+   * 假如当前浏览器视口宽度为1920px
+   * 1vw = 19.2px
+   * 14vw = 268.8px
+   * 0.72916666666667vw = 14px
+   * (14px / (1920px / 100))vw = 14px
+   */
+  @width: 1920; // 定义视口宽度
+  @fontSize: 14; // 定义1rem对应的px值
+  @result: @fontSize / (@width / 100);
+  // @result: round(@result, 4);
+  font-size: ~'@{result}vw';
+}
+
+/* mixins混入式写法 */
+.pxToRem(@size:14) {
+  @rem: @size / 14;
+  @result: ~'@{rem}rem';
+}
+
+p {
+  font-size: 2rem;
+}
+
+html, body {
+  height: 100%;
+}
+
+ul {
+  list-style-type: none;
+  font-size: 0;
+}
+
+li {
+  /**
+   * 使用inline-block或inline每个li中间会有空隙
+   * 解决办法
+       1 将li标签之间用注释填补
+　　　　　　　　　　    <li>内容</li><!--
+　　　　　　　　　      --><li>内容</li>
+　　　　　　      2 将ul标签属性 将font-size设置为0 然后再设置li标签的 font-size属性
+
+       3 直接使用float 将li float设为left 让li变成浮动 各个<li>标签就会紧挨着排列
+   */
+  display: inline-block;
+  font-size: 16px;
+  text-align: center;
+  height: 40px;
+  text-align: center;
+}

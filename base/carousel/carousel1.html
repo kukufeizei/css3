@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>carousel</title>
+    <!-- fontawesome字体库 -->
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        .container {
+            width: 75vw;
+            margin: 0 auto;
+            vertical-align: middle;
+            position: relative;
+            overflow-x: scroll;
+            overflow-y: hidden;
+        }
+
+        .fa {
+            font-size: 10vh;
+            display: none;
+        }
+
+        .container:hover .fa {
+            display: inline-block;
+        }
+
+        .content {
+            position: relative;
+            left: 0%;
+            /* 三张图片为300% */
+            width: 300%;
+            height: 100%;
+            display: flex;
+            /* 动画效果 */
+            transition: left .4s ease-in-out;
+        }
+
+        .content > img {
+            /* 三张图片除以3 */
+            width: calc(100% / 3);
+        }
+
+        /* 定义滚动条宽高 */
+        ::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+        .btn-left {
+            position: absolute;
+            top: 35vh;
+            left: 0.5vw;
+            color: #fff;
+        }
+
+        .btn-right {
+            position: absolute;
+            top: 35vh;
+            right: 0.5vw;
+            color: #fff;
+        }
+
+        .switch {
+            padding: 1% 0;
+            display: flex;
+            text-align: center;
+            height: 30px;
+            background-color: #fbfbfb;
+            color: #848484;
+        }
+
+        .btn {
+            flex: 1;
+        }
+
+        /* 选中后的字体颜色 */
+        .on {
+            color: #e61673;
+        }
+
+        .on:after {
+            content: '';
+            height: 5px;
+            margin: 0 auto;
+            width: 20%;
+            position: relative;
+            bottom: -50%;
+            background-color: #e61673;
+            display: block;
+        }
+
+        img:nth-of-type(odd) {
+            -webkit-filter: grayscale(100%);
+        }
+
+        img {
+            /* 图片收缩 */
+            transition: .1s;
+        }
+
+        img:hover {
+            cursor: pointer;
+            /* 图片放大 */
+            transition: .6s;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="content">
+        <img src="../../static/image/image1.png" ondragstart="return false;">
+        <img src="../../static/image/image1.png" ondragstart="return false;">
+        <img src="../../static/image/image1.png" ondragstart="return false;">
+    </div>
+    <div class="btn-left" onClick='_switch(false)'><i class="fa fa-angle-left"></i></div>
+    <div class="btn-right" onClick='_switch(true)'><i class="fa fa-angle-right"></i></div>
+</div>
+<div class="switch">
+    <!--        <div class="btn on">第1张</div>-->
+    <!--        <div class="btn">第2张</div>-->
+    <!--        <div class="btn">第3张</div>-->
+</div>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    const time = 2000;
+
+    let content = document.querySelector('.content');
+    let switchBtn = document.querySelector('.switch');
+
+    let list = content.children;
+
+    for (let i = 0; i < list.length; i++) {
+        let ele = document.createElement('div');
+        ele.innerText = '第' + (i + 1) + '张';
+        ele.className = 'btn';
+        ele.onclick = btnSwitch;
+        switchBtn.appendChild(ele);
+    }
+    switchBtn.children[0].classList.add('on');
+
+    let btnList = switchBtn.children;
+
+    let imageShow = document.querySelector('.content').style;
+
+    let index = 0; // 轮播索引
+
+    // 按钮下标切换图片
+    function btnSwitch() {
+        for (let i = 0; i < btnList.length; i++) {
+            btnList[i].classList.remove('on');
+        }
+        this.classList.add('on');
+        // 获取按钮索引
+        index = [].indexOf.call(switchBtn.children, this);
+        // 获取当前按钮索引
+        imageShow.left = -index * 100 + '%';
+    }
+
+    function _switch(flag) {
+        // 是否右滑
+        if (flag) {
+            switch (index) {
+                case btnList.length - 1:
+                    index = 0;
+                    break;
+                default:
+                    index++;
+            }
+        } else {
+            switch (index) {
+                case 0:
+                    index = btnList.length - 1;
+                    break;
+                default:
+                    index--;
+            }
+        }
+        imageShow.left = -index * 100 + '%';
+        console.log(imageShow.left);
+        for (let i = 0; i < btnList.length; i++) {
+            btnList[i].classList.remove('on');
+        }
+        btnList[index].classList.add('on');
+    }
+
+    let interval = setInterval(() => {
+        _switch(true);
+    }, time);
+    let timeOut;
+    let container = document.querySelector('.container');
+    // 鼠标经过时清除定时器
+    container.onmouseover = function () {
+        clearInterval(interval);
+        clearTimeout(timeOut);
+    }
+    // 鼠标移开时设置定时器
+    container.onmouseout = function () {
+        // 延时往右滑动并开启定时器
+        timeOut = setTimeout(() => {
+            _switch(true);
+        }, time / 2);
+        interval = setInterval(() => {
+            _switch(true);
+        }, time);
+    }
+</script>
+</body>
+</html>

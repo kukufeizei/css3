@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>loading</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 500px;
+            height: 500px;
+            margin: 0 auto;
+            background-color: black;
+            filter: blur(15px) contrast(30);
+        }
+
+        .content {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .content:nth-child(2) {
+            animation: sport 3s infinite alternate ease-in-out;
+        }
+
+        @keyframes sport {
+            from {
+                box-shadow: 350px 0px 0px white;
+            }
+            to {
+                box-shadow: -350px 0px 0px white;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="nav">
+    <div class="content"></div>
+    <div class="content"></div>
+    <div class="content"></div>
+</div>
+</body>
+</html>

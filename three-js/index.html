@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>three.js</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        #canvas {
+            height: 100%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div id="canvas"></div>
+<script src="https://cdn.bootcss.com/three.js/r83/three.min.js"></script>
+<script>
+    /**
+     * three.js渲染物体到网页 需要3个组件 场景scene 相机camera 渲染器renderer
+     */
+    onload = threeStart;
+
+    let renderer;
+    const canvas = document.getElementById('canvas');
+
+    function initThree() {
+        width = canvas.clientWidth;
+        height = canvas.clientHeight;
+        renderer = new THREE.WebGLRenderer({
+            antialias: true
+        });
+        renderer.setSize(width, height);
+        canvas.appendChild(renderer.domElement);
+        renderer.setClearColor(0xFFFFFF, 1.0);
+    }
+
+    let camera;
+
+    function initCamera() {
+        camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
+        camera.position.x = 0;
+        camera.position.y = 0;
+        camera.position.z = 600;
+        camera.up.x = 0;
+        camera.up.y = 1;
+        camera.up.z = 0;
+        camera.lookAt({
+            x: 0,
+            y: 0,
+            z: 0
+        });
+    }
+
+    let scene;
+
+    function initScene() {
+        scene = new THREE.Scene();
+    }
+
+    let light;
+
+    function initLight() {
+        light = new THREE.AmbientLight(0xFF0000);
+        light.position.set(100, 100, 200);
+        scene.add(light);
+        light = new THREE.PointLight(0x00FF00);
+        light.position.set(0, 0, 300);
+        scene.add(light);
+    }
+
+    let cube;
+    let mesh;
+
+    function initObject() {
+        let geometry = new THREE.CylinderGeometry(100, 150, 400);
+        let material = new THREE.MeshLambertMaterial({color: 0xFFFFFF});
+        mesh = new THREE.Mesh(geometry, material);
+        mesh.position = new THREE.Vector3(0, 0, 0);
+        scene.add(mesh);
+    }
+
+    function initTween() {
+        new TWEEN.Tween(mesh.position)
+            .to({x: -400}, 3000).repeat(Infinity).start();
+    }
+
+    function threeStart() {
+        initThree();
+        initCamera();
+        initScene();
+        initLight();
+        initObject();
+        animation();
+    }
+
+    function animation() {
+        // camera.position.x = camera.position.x + 1;
+        mesh.position.x -= 1;
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(animation);
+    }
+</script>
+</body>
+</html>

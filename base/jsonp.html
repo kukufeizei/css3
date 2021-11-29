@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>JSONP</title>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <p v-cloak>{{ ip }}</p>
+    <button @click="one">jquery jsonp</button>
+    <button @click="two">原生js jsonp</button>
+</div>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.6.11/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.19.2/axios.min.js"></script>
+<script>
+    // Java 后端 JSONP 实现参考 https://github.com/tothis/spring-boot-record/blob/main/mvc/base/src/main/java/com/example/controller/JsonpController.java
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                ip: null,
+                proxy: 'https://bird.ioliu.cn/v2',
+                url: 'https://pv.sohu.com/cityjson'
+            };
+        },
+        created() {
+            axios.get(this.proxy + '?url=' + this.url)
+                .then(result => {
+                    eval(result.data);
+                    this.ip = returnCitySN;
+                })
+                .catch(result => {
+                    console.log(result);
+                });
+        },
+        methods: {
+            // jQuery 实现
+            one() {
+                $.ajax({
+                    url: '//localhost:8080/jsonp'
+                    , dataType: 'jsonp'
+                    , jsonp: 'callbackName' // 回调函数参数名称
+                    // 回调函数参数值（默认 jQuery 会生成随机名称）
+                    , jsonpCallback: 'test'
+                    , data: {
+                        name: 'lilei'
+                    }
+                    , success: function (data) {
+                        console.log(data);
+                    }
+                });
+            }, // 原生js实现
+            two() {
+                this.jsonp({
+                    url: '//localhost:8080/jsonp'
+                    , callbackName: 'callbackName'
+                    , data: {name: 'lilei'}
+                    , callback: function (response) {
+                        console.log(response);
+                    }
+                });
+            }
+            ,// 手写 JSONP 函数
+            jsonp(object) {
+
+                // 回调函数名
+                let callbackName = 'callbackName';
+                // url参数拼接
+                if (object.url.indexOf('?') < 0) {
+                    object.url += '?';
+                }
+                // data参数拼接
+                for (let key in object.data) {
+                    object.url += key + '=' + object.data[key] + '&';
+                }
+
+                object.url += '&' + callbackName + '=' + object.callbackName;
+                // 创建script标签
+                let script = document.createElement('script');
+                // 将方法注册到全局
+                window[object.callbackName] = function (response) {
+                    try {
+                        object.callback(response);
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        // 删除该函数和script元素
+                        delete window[callbackName];
+                        script.remove();
+                    }
+                }
+                script.src = object.url;
+                document.body.appendChild(script);
+            }
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>nivo-slider</title>
+    <link href="https://cdn.bootcss.com/jquery-nivoslider/3.2/nivo-slider.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="slider-wrapper theme-default">
+    <div id="slider" class="nivoSlider">
+        <img src="https://www.duotu555.com/style/da/01.jpg" title="#tip">
+        <img src="https://www.duotu555.com/style/da/02.jpg">
+        <img src="https://www.duotu555.com/style/da/03.jpg" title="<span style='color:blue'>提示</span>">
+        <img src="https://www.duotu555.com/style/da/04.jpg">
+    </div>
+    <div id="tip" class="nivo-html-caption">
+        <span style="color:red">提示</span>
+    </div>
+</div>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery-nivoslider/3.2/jquery.nivo.slider.min.js"></script>
+<script>
+    /**
+     * effect: 设置幻灯变化效果 可以使用random 或指定效果如
+     *              sliceDownRight sliceDownLeft sliceUpRight sliceUpLeft sliceUpDown
+     *              sliceUpDownLeft fold fade boxRandom boxRain boxRainReverse
+     *              boxRainGrow boxRainGrowReverse
+     * slices: 动画效果参数
+     * boxCols: 动画效果参数
+     * boxRows: 动画效果参数
+     * animSpeed: 动画变化速度
+     * pauseTime: 每个幻灯时间
+     * startSlide: 起始幻灯
+     * directionNav: 是否显示上一个和下一个导航
+     * controlNav: 是否显示导航控制
+     * controlNavThumbs: 导航是否使用缩略图
+     * pauseOnHover: 悬浮是否停止
+     * manualAdvance: 是否手动变化幻灯
+     * prevText: 上一张文字设定
+     * nextText: 下一张文字设定
+     * randomStart: 是否随机开始
+     * beforeChange函数: 在幻灯变化前调用
+     * afterChange函数: 在幻灯变化后调用
+     * slideshowEnd函数: 在幻灯变化完成调用
+     * lastSlide函数: 在最后一个幻灯变化完成调用
+     * afterLoad函数: slider加载后调用
+     */
+    $(window).on('load', function () {
+        $('#slider').nivoSlider({
+            effect: 'random',
+            slices: 15,
+            boxCols: 8,
+            boxRows: 4,
+            animSpeed: 500,
+            pauseTime: 3000,
+            startSlide: 0,
+            directionNav: true,
+            controlNav: true,
+            controlNavThumbs: false,
+            pauseOnHover: true,
+            manualAdvance: false,
+            prevText: '上一页',
+            nextText: '下一页',
+            randomStart: false,
+            beforeChange: function () {
+            },
+            afterChange: function () {
+            },
+            slideshowEnd: function () {
+            },
+            lastSlide: function () {
+            },
+            afterLoad: function () {
+            }
+        });
+    });
+</script>
+</body>
+</html>

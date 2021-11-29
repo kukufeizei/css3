@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>charts</title>
+</head>
+<body>
+
+<!-- 具备宽高 -->
+<div id="main" style="width: 600px;height:400px;"></div>
+<script src="https://cdn.bootcss.com/echarts/4.4.0-rc.1/echarts-en.min.js"></script>
+<script>
+    // 初始化 ECharts 实例
+    const chart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    const option = {
+        title: {
+            text: 'ECharts 示例'
+        },
+        tooltip: {},
+        legend: {
+            data: ['数据']
+        },
+        xAxis: {
+            data: ["one", "two", "three"]
+        },
+        yAxis: {},
+        series: [{
+            name: '悬浮标题',
+            type: 'bar',
+            data: [5, 20, 36, 10, 10, 20]
+        }]
+    };
+
+    // 配置
+    chart.setOption(option);
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>validator</title>
+    <style>
+        input, textarea {
+            border: 1px solid grey;
+            padding: 8px;
+            border-radius: 4px;
+            line-height: 25px;
+            transition: all 0.15s ease-in 0s;
+            vertical-align: top;
+        }
+
+        textarea {
+            width: calc(100% - 18px);
+        }
+
+        input:focus, textarea:focus {
+            border-color: #52a8ec;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset, 0 0 5px rgba(82, 168, 236, 0.6);
+            outline: 0 none;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <form id="dataForm">
+        <div>
+            <input data-check="email">
+        </div>
+        <div>
+            <input data-check="tel">
+        </div>
+        <div>
+            <input data-check="mobile">
+        </div>
+        <div>
+            <input data-check="url">
+        </div>
+        <div>
+            <input data-check="number">
+        </div>
+        <div>
+            <input data-check="chinese">
+        </div>
+        <div>
+            <input data-check="english">
+        </div>
+        <div>
+            <input data-check="userName">
+        </div>
+        <div>
+            <input data-check="password">
+        </div>
+        <div>
+            <input data-check="date">
+        </div>
+    </form>
+</div>
+<style>
+    .check-success {
+        box-shadow: 0 1px 2px rgba(3, 139, 0, 0.2) inset;
+        border-color: #90b983;
+        color: #2d7c14;
+    }
+
+    .check-fail {
+        box-shadow: 0 1px 2px rgba(139, 23, 0, 0.2) inset, 0 0 5px rgba(139, 23, 0, 0.6);
+        border-color: #d46060;
+        color: #b40000;
+    }
+</style>
+<script>
+    const elements = document.getElementById('dataForm').elements;
+    for (let i = 0; i < elements.length; i++) {
+        let element = elements[i];
+        element.name = element.placeholder = element.dataset.check;
+    }
+
+    (function (global, factory) {
+        if (typeof exports === 'object' && typeof module !== 'undefined') {
+            module.exports = factory();
+        } else if (typeof define === 'function' && define.amd) {
+            define(factory)
+        } else {
+            global = global || self, global.Validator = factory();
+        }
+    })(this, function () {
+        // 开启严格模式
+        'use strict';
+
+        // 阻止浏览器默认行为
+        Validator.stopDefault = function (e) {
+            // 非ie中阻止默认行为方式
+            if (e && e.preventDefault)
+                e.preventDefault();
+            // ie中阻止默认行为方式
+            else
+                window.event.returnValue = false;
+            return false;
+        }
+
+        // 添加监听事件
+        Validator.addEvent = function (ele, type, fun) {
+            if (window.addEventListener) {
+                ele.addEventListener(type, fun, false);
+            } else if (window.attachEvent) {
+                ele.attachEvent('on' + type, fun)
+            } else {
+                ele['on' + type] = fun;
+            }
+        }
+
+        Validator.prototype.getNextEle = function (that, prefix) {
+            let nextEleId = prefix + that.name;
+            let nextEle = document.getElementById(nextEleId);
+            if (!nextEle) {
+                nextEle = document.createElement('div');
+                nextEle.id = nextEleId;
+                that.parentNode.appendChild(nextEle);
+            }
+            return nextEle;
+        }
+
+        Validator.prototype.validator = {
+            email: {reg: /^(\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*)?$/, msg: 'email格式错误'},
+            tel: {
+                reg: /^((0?1[358]\d{9})[,，]?|((0(10|2[0-9]{1}|[3-9]{1}\d{2})[-_－—]?)?\d{7,8})[,，]?)*$/,
+                msg: '电话号码填写错误'
+            },
+            mobile: {reg: /^(0?1[358]\d{9})*$/, msg: '手机号码格式错误', min: 0, max: 12},
+            url: {
+                reg: /^(http:\/\/[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"\"])*)?$/,
+                msg: '网址填写错误'
+            },
+            number: {reg: /^\d*$/, msg: '数字格式错误'},
+            chinese: {reg: /^[\u0391-\uFFE5]*$/, msg: '全角中文格式错误'},
+            english: {reg: /^[A-Za-z]*$/, msg: '半角英文字母格式错误'},
+            userName: {reg: /^[a-zA-Z]{1}\w*$/, msg: '帐号需由字母开头的4-20位字母 数字或下划线组成', min: 4, max: 20},
+            password: {reg: /^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]*$/, msg: '密码长度4-20 请勿输入特殊字符', min: 4, max: 20},
+            date: {reg: /^((\d{4})[\-|\.|\/](\d{1,2})[\-|\.|\/](\d{1,2}))?$/, msg: '日期格式错误 如2020-12-22'},
+        }
+        // 消息box样式及框入框样式
+        Validator.prototype.classes = {
+            success: 'check-success', // 成功
+            fail: 'check-fail', // 失败
+        }
+
+        function Validator(selector, validator, classes) {
+            const form = document.querySelector(selector);
+
+            if (validator) {
+                for (let i in this.validator) {
+                    if (validator[i] !== undefined)
+                        this.validator[i] = validator[i];
+                }
+            }
+            if (classes) {
+                for (let i in this.classes) {
+                    if (classes[i] !== undefined)
+                        this.classes[i] = classes[i];
+                }
+            }
+
+            let elements = form.elements;
+            for (let i = 0; i < elements.length; i++) {
+                let check = elements[i].dataset.check;
+                if (check) {
+                    let element = elements[i];
+                    let check = element.dataset.check;
+                    if (check) {
+                        let validator = this.validator[check];
+                        if (validator) {
+                            Validator.addEvent(element, 'input', function (that) {
+                                return function () {
+                                    let nextEle = that.getNextEle(this, 'check-');
+                                    let min = validator.min;
+                                    let max = validator.max;
+                                    let checkValue = validator.reg.test(this.value);
+                                    let checkMax = !max || this.value.length <= max;
+                                    let checkMin = !min || this.value.length >= min;
+                                    if (checkValue && checkMax && checkMin) {
+                                        nextEle.textContent = null;
+                                        this.classList.add('check-success');
+                                        this.classList.remove('check-fail');
+                                    } else {
+                                        console.log(validator.msg);
+                                        nextEle.textContent = validator.msg;
+                                        this.classList.add('check-fail');
+                                        this.classList.remove('check-success');
+                                    }
+                                }
+                            }(this));
+                        }
+                    }
+
+                    Validator.addEvent(element, 'input', function (that) {
+                        return function () {
+                            let nextEle = that.getNextEle(this, 'show-');
+                            nextEle.textContent = '已输入' + this.value.length + '个字符';
+                        }
+                    }(this));
+                    Validator.addEvent(element, 'focus', function (that) {
+                        return function () {
+                            let nextEle = that.getNextEle(this, 'show-');
+                            nextEle.style.display = null;
+                        }
+                    }(this));
+                    Validator.addEvent(element, 'blur', function (that) {
+                        return function () {
+                            let nextEle = that.getNextEle(this, 'show-');
+                            nextEle.style.display = 'none';
+                        }
+                    }(this));
+                }
+            }
+        }
+
+        return Validator;
+    });
+    new Validator('#dataForm');
+</script>

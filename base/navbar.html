@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>navbar</title>
+    <!-- 必须加入type="text/less" -->
+    <link href="../static/css/navbar.less" rel="stylesheet" type="text/less">
+    <style>
+        .content > li::after {
+            content: '';
+            display: block;
+            margin: -10px auto;
+            border-radius: 6px;
+            width: 94%;
+            height: 10px;
+            background-color: #6200ff;
+        }
+
+        .content > li:nth-of-type(odd) {
+            width: 10%;
+        }
+
+        .content > li:nth-of-type(even) {
+            width: calc((100% - 30% - 12px) / 3);
+        }
+    </style>
+</head>
+<body>
+<ul class="content">
+    <li class="on">one</li>
+    <li>two</li>
+    <li>three</li>
+    <li>four</li>
+    <li>five</li>
+    <li>six</li>
+</ul>
+
+<p onclick="fun()">test</p>
+<span style="font-size: 28px;">test</span>
+
+<div class="one" style="width: calc(1920px - 2px);"></div>
+<div class="two" style="width: calc(100vw - 2px);"></div>
+
+<!-- <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script> -->
+<script src="https://cdn.bootcss.com/less.js/3.10.3/less.min.js"></script>
+<script>
+    // 所有导航标签
+    let list = document.getElementsByClassName('content')[0].children;
+
+    // 为元素绑定方法
+    for (let i = 0; i < list.length; i++) {
+        list[i].onclick = _switch;
+        // list[i].addEventListener('click', __switch);
+        // 需要传参使用如下方式 注意事件会被覆盖
+        // list[i].onclick = () => {
+        //     __switch(i);
+        // };
+        // 使用事件监听可解决覆盖方法
+        list[i].addEventListener('click', () => {
+            __switch(i);
+        });
+    }
+
+    function _switch() {
+        for (let i = 0; i < list.length; i++) {
+            // $(list[i]).removeClass('on');
+            list[i].classList.remove('on');
+        }
+        // $(that).addClass('on');
+        this.classList.add('on');
+    }
+
+    // addEventListener绑定的响应函数第一个参数为event
+    function __switch(value) {
+        console.log(value);
+    }
+
+    let fontSize = 14; // 定义1rem对应的px值
+
+    /** 自动更改font-size */
+    (function () {
+        const newRem = function () {
+            const html = document.documentElement;
+            html.style.fontSize = fontSize / (html.getBoundingClientRect().width / 100) + 'vw';
+            console.log(html.getBoundingClientRect().width)
+        };
+        window.addEventListener('resize', newRem, false);
+        newRem();
+    })();
+
+    function fun() {
+        // 网页可见区域宽 包括边框
+        let width = document.body.offsetWidth;
+        let htmlFontSize = fontSize / (width / 100) + 'vw';
+        document.getElementsByTagName('html')[0].style.fontSize = htmlFontSize;
+    }
+</script>
+</body>
+</html>

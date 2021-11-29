@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>alert</title>
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        @-webkit-keyframes alert-open {
+            0% {
+                opacity: .5;
+                -webkit-transform: scale(.5)
+            }
+            80% {
+                opacity: .8;
+                -webkit-transform: scale(1.1)
+            }
+            100% {
+                opacity: 1;
+                -webkit-transform: scale(1)
+            }
+        }
+
+        @keyframes alert-open {
+            0% {
+                opacity: .5;
+                transform: scale(.5)
+            }
+            80% {
+                opacity: .8;
+                transform: scale(1.1)
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1)
+            }
+        }
+
+        @-webkit-keyframes alert-close {
+            0% {
+                opacity: 1;
+                -webkit-transform: scale(1)
+            }
+            80% {
+                opacity: .5;
+                -webkit-transform: scale(1.1)
+            }
+            100% {
+                opacity: 0;
+                -webkit-transform: scale(.5)
+            }
+        }
+
+        @keyframes alert-close {
+            0% {
+                opacity: 1;
+                -webkit-transform: scale(1)
+            }
+            80% {
+                opacity: .5;
+                -webkit-transform: scale(1.1)
+            }
+            100% {
+                opacity: 0;
+                -webkit-transform: scale(.5)
+            }
+        }
+
+        #alert {
+            position: relative;
+            z-index: 1;
+            top: 30%;
+            width: 50%;
+            height: 30%;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0px 0px 10px 0px rgba(184, 186, 194, 0.5);
+            transition: opacity 1s;
+
+            /* opacity: 1; */
+            /* filter: Alpha(opacity=100); */
+
+            -webkit-animation-name: alert-open;
+            animation-name: alert-open;
+            -webkit-animation-duration: .3s;
+            animation-duration: .3s;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+        }
+
+        .close {
+            /* opacity: 0 !important; */
+            /* filter: Alpha(opacity=0) !important; */
+
+            -webkit-animation-name: alert-close !important;
+            animation-name: alert-close !important;
+        }
+
+        #alert::before {
+            content: '标题';
+            display: block;
+            margin: -10px 0 20px;
+        }
+
+        #alert::after {
+            content: '';
+            display: block;
+            position: absolute;
+            background: #dfdfdf;
+            width: calc(100% - 40px);
+            left: 20px;
+            top: 40px;
+            height: 1px;
+        }
+
+        #shadow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background-color: rgb(0, 0, 0);
+            /**
+             * display: none;
+             * 元素被隐藏 不占据空间 浏览器不渲染 动态修改此属性会引起浏览器重新渲染
+             * 不被子类继承 但子类不会显示 transition对此无效
+
+             * visibility: hidden;
+             * 元素被隐藏 占据空间 动态修改此属性会引起浏览器重新渲染
+             * 会被子类继承 子类可通过设置visibility: visible显示
+             * transition对此无效
+
+             * opacity=0
+             * 透明度为100% 元素被隐藏 依然占据空间
+             * 会被子元素继承 子元素不能通过opacity=1 进行反隐藏
+             * 元素能触发已绑定事件 transition对此生效
+             */
+            opacity: .1;
+            /*display: none;*/
+        }
+
+        #show {
+            display: block;
+            position: relative;
+            top: 30%;
+            z-index: 1;
+            margin-left: 24%;
+        }
+
+        .close-btn {
+            float: right;
+            margin-top: -40px;
+        }
+
+        .close-btn:hover {
+            color: #0080bb;
+            cursor: pointer;
+        }
+
+        .content {
+            height: calc(100% - 40px);
+            overflow-y: scroll;
+        }
+
+        /* 滚动条宽高 */
+        .content::-webkit-scrollbar {
+            width: 50px;
+            height: 1px;
+        }
+
+        /* 滑块样式 */
+        .content::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: 0 0 2px rgba(0, 0, 0, .2) inset;
+            box-shadow: 0 0 2px rgba(0, 0, 0, .2) inset;
+            background: #838383;
+        }
+
+        /* 滑块轨道样式 */
+        .content::-webkit-scrollbar-track {
+            -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, 0) inset;
+            box-shadow: 0 0 1px rgba(0, 0, 0, 0) inset;
+            border-radius: 10px;
+            background: #ccc;
+        }
+    </style>
+</head>
+<body>
+<button id="show">显示</button>
+
+<div id="alert" class="close" style="display: none">
+    <i class="fa close-btn">&#xf00d;</i>
+    <div class="content">
+        <p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p>
+        <p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p>
+        <p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p>
+        <p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p>
+        <p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p><p>弹出层内容</p>
+    </div>
+</div>
+<div id="shadow" style="display: none">
+
+</div>
+<script>
+    // 显示弹层
+    document.getElementById('show').onclick = function () {
+        // document.getElementById('alert').style.display = 'block';
+        document.getElementById('alert').classList.remove('close');
+        document.getElementById('shadow').style.display = 'block';
+
+        // css动画默认会自动展示 设置为display: none open动画时 设为block
+        document.getElementById('alert').style.display = 'block';
+    }
+
+    // 隐藏弹层
+    document.getElementsByClassName('close-btn')[0].onclick = function () {
+        // document.getElementById('alert').style.display = 'none';
+        document.getElementById('alert').classList.add('close');
+        document.getElementById('shadow').style.display = 'none';
+    }
+
+    // 阴影点击后隐藏弹层
+    document.getElementById('shadow').onclick = function () {
+        document.getElementById('alert').classList.add('close');
+        document.getElementById('shadow').style.display = 'none';
+    }
+</script>
+</body>
+</html>

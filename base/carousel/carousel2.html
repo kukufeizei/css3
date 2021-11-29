@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>carousel</title>
+    <style>
+        .container {
+            width: 75vw;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .image-container {
+            position: relative;
+            left: 0%;
+            height: 100%;
+            display: flex;
+        }
+
+        #imageShow {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+
+        #imageShow > div {
+            width: 1%;
+            height: 100%;
+            /* 默认开始切换的图片 */
+            background: url(../../static/image/image2.png);
+            background-size: auto 100%;
+            float: left;
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .one {
+            background: -webkit-linear-gradient(left, #ed4b69, #e61972); /* Safari 5.1 - 6.0 */
+            background: -o-linear-gradient(right, #ed4b69, #e61972); /* Opera 11.1 - 12.0 */
+            background: -moz-linear-gradient(right, #ed4b69, #e61972); /* Firefox 3.6 - 15 */
+            background: linear-gradient(right, #ed4b69, #e61972); /* 标准的语法 (必须放在最后) */
+        }
+
+        .two {
+            background: -webkit-linear-gradient(left, #39a79f, #0b9ab2); /* Safari 5.1 - 6.0 */
+            background: -o-linear-gradient(right, #39a79f, #0b9ab2); /* Opera 11.1 - 12.0 */
+            background: -moz-linear-gradient(right, #39a79f, #0b9ab2); /* Firefox 3.6 - 15 */
+            background: linear-gradient(right, #39a79f, #0b9ab2); /* 标准的语法 (必须放在最后) */
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="image-container">
+        <img src="../../static/image/image1.png" ondragstart="return false;">
+        <div id="imageShow"></div>
+    </div>
+</div>
+<script>
+    let images = '';
+
+    // 使用100个div显示一张图片
+    for (var i = 0; i < 100; i++) {
+        images += '<div style="background-position-x:' + (1 * i) + '%"></div>';
+    }
+    var imageShow = document.getElementById('imageShow');
+    imageShow.innerHTML = images;
+    let list = imageShow.children;
+
+    var index = 0;
+    var flag = false;
+
+    var interval = setInterval(move, 1500);
+
+    function move() {
+        if (index === list.length - 1) {
+            index = 0;
+            flag = !flag;
+            return;
+        }
+        // 显示
+        list[index].style.opacity = flag ? 1 : 0;
+        index++;
+        setTimeout(move, 100);
+    }
+</script>
+</body>
+</html>

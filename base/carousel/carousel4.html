@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>轮播图</title>
+    <!-- fontawesome字体库 -->
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .banner {
+            width: 1000px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel {
+            position: absolute;
+            left: 0;
+        }
+
+        .carousel img {
+            width: 1000px;
+            height: 300px;
+            float: left;
+        }
+
+        .action {
+            color: coral;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .action > i {
+            position: absolute;
+            top: 140px;
+            width: 40px;
+            height: 24px;
+            border: none;
+            border-radius: 4px;
+            background: rgba(200, 200, 200, 0.5);
+            z-index: 99;
+        }
+
+        #left {
+            left: 0
+        }
+
+        #right {
+            right: 0
+        }
+    </style>
+</head>
+<body>
+<div class="banner">
+    <div class="carousel">
+        <img src="../../static/image/image1.png">
+        <img src="../../static/image/image2.png">
+        <img src="../../static/image/cool1.gif">
+        <img src="../../static/image/cool2.gif">
+        <!-- 复制第一张图片在最后 做过渡用 -->
+        <img src="../../static/image/image1.png">
+    </div>
+    <div class="action">
+        <i id="left" class="fa fa-angle-left"></i>
+        <i id="right" class="fa fa-angle-right"></i>
+    </div>
+</div>
+</body>
+<script>
+    function move(ele, json, callback) {
+        clearInterval(ele.interval);
+        ele.interval = setInterval(() => {
+            let flag = true;
+            for (let i in json) {
+                let iNow = parseInt(getStyle(ele, i));
+                let speed = (json[i] - iNow) / 6;
+                speed = speed < 0 ? Math.floor(speed) : Math.ceil(speed);
+                if (iNow != json[i]) {
+                    flag = false;
+                }
+                ele.style[i] = iNow + speed + 'px';
+            }
+            if (flag) {
+                clearInterval(ele.interval);
+                callback && callback();
+            }
+        }, 30);
+    }
+
+    function getStyle(ele, attr) {
+        if (ele.currentStyle) {
+            return ele.currentStyle[attr];
+        } else {
+            return getComputedStyle(ele, false)[attr];
+        }
+    }
+
+    function Banner() {
+        this.left = document.getElementById('left');
+        this.right = document.getElementById('right');
+        this.carousel = document.querySelector('.carousel');
+        this.img = this.carousel.children;
+        this.carousel.style.width = this.img.length * this.img[0].offsetWidth + 'px';
+        this.index = 0;
+        this.init();
+    }
+
+    Banner.prototype.init = function () {
+        let that = this;
+        this.right.onclick = function () {
+            that.changeIndex();
+        }
+    }
+    Banner.prototype.changeIndex = function () {
+        if (this.index == this.img.length - 1) {
+            // 当索引到最后一个时 回到真正的第二张图片 索引为1
+            this.index = 1;
+            // 索引设置好之后 将carousel的left设置成初始值left:0
+            // move会从left:0走到-index1 * width1000
+            this.carousel.style.left = '0';
+        } else {
+            this.index++;
+        }
+        this.display();
+    }
+    Banner.prototype.display = function () {
+        move(this.carousel, {
+            left: -this.index * this.img[0].offsetWidth
+        });
+    }
+
+    new Banner();
+</script>
+</html>

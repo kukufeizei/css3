@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>checkbox</title>
+    <style>
+        /*
+         * css变量使用`--`开头声明 且变量名大小写敏感 var()用于读取变量
+         * 变量值只能用作属性值 不能用作属性名
+         * https://developer.mozilla.org/zh-CN/docs/Web/CSS/Using_CSS_custom_properties
+         * http://www.ruanyifeng.com/blog/2017/05/css-variables.html
+         */
+        :root {
+            --button-width: 500px;
+            --button-height: 295px;
+            --toggle-diameter: 255px;
+            --button-toggle-offset: calc((var(--button-height) - var(--toggle-diameter)) / 2);
+            --toggle-shadow-offset: 10px;
+            --toggle-wider: 333px;
+            --color-grey: #E9E9E9;
+            --color-dark-grey: #39393D;
+            --color-green: #30D158;
+        }
+
+        span {
+            display: inline-block;
+            width: var(--button-width);
+            height: var(--button-height);
+            background-color: var(--color-grey);
+            border-radius: calc(var(--button-height) / 2);
+            position: relative;
+            transition: .3s all ease-in-out;
+        }
+
+        span::after {
+            content: '';
+            display: inline-block;
+            width: var(--toggle-diameter);
+            height: var(--toggle-diameter);
+            background-color: #fff;
+            border-radius: calc(var(--toggle-diameter) / 2);
+            position: absolute;
+            top: var(--button-toggle-offset);
+            transform: translateX(var(--button-toggle-offset));
+            box-shadow: var(--toggle-shadow-offset) 0 calc(var(--toggle-shadow-offset) * 4) rgba(0, 0, 0, .10);
+            transition: .3s all ease-in-out;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        input[type=checkbox]:checked + span {
+            background-color: var(--color-green);
+        }
+
+        input[type=checkbox]:checked + span::after {
+            transform: translateX(calc(var(--button-width) - var(--toggle-diameter) - var(--button-toggle-offset)));
+            box-shadow: calc(var(--toggle-shadow-offset) * -1) 0 calc(var(--toggle-shadow-offset) * 4) rgba(0, 0, 0, .10);
+        }
+
+        input[type=checkbox] {
+            display: none;
+        }
+
+        input[type=checkbox]:active + span::after {
+            width: var(--toggle-wider);
+        }
+
+        input[type=checkbox]:checked:active + span::after {
+            transform: translateX(calc(var(--button-width) - var(--toggle-wider) - var(--button-toggle-offset)));
+        }
+
+        /* 苹果黑夜模式 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1c1c1e;
+            }
+
+            span {
+                background-color: var(--color-dark-grey);
+            }
+        }
+    </style>
+</head>
+<body>
+<label for="toggle">
+    <input type="checkbox" id="toggle">
+    <span></span>
+</label>
+</body>
+</html>

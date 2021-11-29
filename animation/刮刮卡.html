@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8">
+    <title>刮刮卡</title>
+    <style>
+        #canvas {
+            background: url(../static/image/cool2.gif);
+            background-size: cover;
+            width: 1000px;
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+<div id="canvas"></div>
+</body>
+<script>
+    let isPc = !/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent);
+
+    function createCanvas(parent, width, height) {
+        let canvas = document.createElement('canvas');
+        canvas.width = width || 1000;
+        canvas.height = height || 600;
+        parent.appendChild(canvas);
+        return canvas;
+    }
+
+    function init(container, width, height) {
+        const startName = isPc ? 'mousedown' : 'touchstart';
+        const endName = isPc ? 'mouseup' : 'touchend';
+        const moveName = isPc ? 'mousemove' : 'touchmove';
+
+        let canvas = createCanvas(container, width, height);
+        let ctx = canvas.getContext('2d');
+
+        ctx.fillStyle = 'gray'; // 蒙布颜色
+        ctx.fillRect(0, 0, width, height); // 填充面积
+        ctx.fillCircle = function (x, y, radius) {
+            // 开启新的描绘路径
+            this.beginPath();
+            this.moveTo(x, y);
+            this.arc(x, y, radius, 0, Math.PI * 2, false);
+            this.fill();
+
+            let data = this.getImageData(0, 0, width, height).data
+                , number = 0;
+            for (let i = 3; i < data.length; i += 4) {
+                if (data[i] === 0)
+                    number++;
+            }
+            // 刮开40%自动展开全部
+            if (number > width * height * .4) {
+                this.clearRect(0, 0, width, height);
+                canvas.removeEventListener(moveName, draw);
+            }
+        };
+
+        function draw(e) {
+            if (!this.flag) {
+                return;
+            }
+            let x = (isPc ? e.pageX : e.changedTouches[0].pageX) - this.offsetLeft;
+            let y = (isPc ? e.pageY : e.changedTouches[0].pageY) - this.offsetTop;
+            let radius = 20;
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillCircle(x, y, radius);
+        }
+
+        canvas.addEventListener(startName, function (e) {
+            this.flag = true;
+        });
+        canvas.addEventListener(endName, function (e) {
+            this.flag = false;
+        });
+        canvas.addEventListener(moveName, draw);
+    }
+
+    let container = document.getElementById('canvas');
+    init(container, 1000, 600);
+</script>
+</html>

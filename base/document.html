@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>document</title>
+</head>
+<body>
+<!-- 注释 -->
+<div id="content">
+    <div id="1">
+        <i>test</i>one
+    </div>
+    <script>var test = 'test';</script>
+    <!-- two --><div id="2">
+        <i></i>two
+    </div>
+</div>
+<p id="test" user="lilei"></p>
+<script>
+    let content = document.getElementById('content');
+    let one = document.getElementById('1');
+    let two = document.getElementById('2');
+
+    let childNodes = document.querySelector('body').childNodes;
+    /**
+     * childNodes 获取元素节点和文本 注释
+     * children 获取元素节点
+     */
+    for (let i = 0; i < childNodes.length; i++) {
+        let nodeName = childNodes[i].nodeName;
+        // 解决方案
+        if (nodeName === '#text' || nodeName === '#comment' || nodeName === 'SCRIPT') continue;
+        // 或
+        let nodeType = childNodes[i].nodeType;
+        if (nodeType === 3 || nodeType === 8) continue;
+        console.log(childNodes[i]);
+    }
+
+    /**
+     * firstChild和firstElementChild
+     */
+    function firstChild(obj) {
+        // firstChild会获取文本或注释作为节点
+        if (obj.firstElementChild
+            || obj.firstChild.nodeType === 3
+            || obj.firstChild.nodeType === 8)
+            return obj.firstElementChild;
+        return obj.firstChild;
+    }
+
+    console.log(firstChild(content), 'firstChildFun');
+    console.log(content.firstElementChild, 'firstElementChild');
+    console.log(content.firstChild, 'firstChild');
+
+    /**
+     * lastChild与lastElementChild
+     */
+    console.log(content.lastChild, 'lastChild');
+    console.log(content.lastElementChild, 'lastElementChild');
+
+    /**
+     * nextSibling与nextElementSibling 下一个兄弟元素节点
+     * nextSibling会获取文本和注释 nextElementSibling只获取doc元素
+     */
+    console.log(one.nextSibling, 'nextSibling');
+    console.log(one.nextElementSibling, 'nextElementSibling');
+
+    /**
+     * previousSibling与previousElementSibling 前一个兄弟元素节点
+     * previousSibling会获取文本和注释 previousElementSibling只获取doc元素
+     */
+    console.log(two.previousSibling, 'previousSibling');
+    console.log(two.previousElementSibling, 'previousElementSibling');
+
+    /**
+     * parentNode 获取父元素 不存在兼容性问题
+     * offsetParent 获取第一个设置定位的父元素
+     * offsetLeft 获取离第一个定位父元素的左距离
+     * offsetTop 获取离第一个定位父元素的上距离
+     */
+    console.log(two.offsetParent, 'offsetParent');
+
+    // 只获取第一个匹配元素 结果为单个dom对象
+    document.querySelector('input[type=password]');
+    // 获取所有的匹配元素 结果为数组
+    document.querySelectorAll('input[type=text]');
+
+    // test为不存在的class 返回值为空数组
+    console.log(document.getElementsByClassName('test') === null); // false
+    console.log(document.getElementsByClassName('test').length); // 0
+    // test为不存在的id 返回值为null
+    console.log(document.getElementById('test') === null); // true
+    console.log(document.querySelector('#test') === null); // true
+
+    // content为存在的id name为不存在的属性
+    console.log(document.getElementById('content').getAttribute('name') === null); // true
+    console.log(document.querySelector('#content').getAttribute('name') === null); // true
+
+    /**
+     * 普通自定义属性只可以通过getAttribute获取值
+     * html5自定义'data-'前缀属性还可以通过dataset获取值
+     */
+    document.getElementById('test').getAttribute('user');
+    document.getElementById('test').setAttribute('user', 'lei');
+    // <p data-test="lilei"></p>
+    document.getElementById('test').dataset.test;
+    document.getElementById('test').dataset.test == 'lei';
+    // <p data-user-name="lilei"></p>
+    // data-多个单词组成的属性 获取时使用驼峰风格
+    document.getElementById('test').dataset.userName;
+    document.getElementById('test').dataset.userName = 'lei';
+
+    console.log(document.getElementById('1'));
+    // console.log(document.querySelector('#1')); // querySelector无法获取数字类型id
+
+    console.log(content.innerText, 'innerText');
+    /**
+     * innerText操作会引起浏览器回流
+     * textContent在特定情况下 如所赋值内容超出了容器尺寸 才会触发回流
+     * textContent会识别script标签中内容 会把空标签解析成换行 几个空标签就是几行
+     */
+    console.log(content.textContent, 'textContent');
+</script>
+</body>
+</html>

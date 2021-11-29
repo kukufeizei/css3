@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>object</title>
+</head>
+<body>
+<script>
+    // 创建js对象 key可以加双引号也可以不加双引号
+
+    // 通过new关键字创建对象
+    let obj = new Object();
+    // 添加属性
+    obj.name = '李磊';
+    // 添加方法
+    obj.age = function () {
+        return this.name + '年龄18岁';
+    };
+
+    // 通过字面量创建对象
+    obj = {
+        'name': '李磊',
+        "age": function () {
+            return this.name + '年龄18岁';
+        }
+    };
+
+    // 通过构造函数创建对象 建议方法名首字母大写
+    function Person(name, age) {
+        this.name = name;
+        this.age = function () {
+            return this.name + '年龄' + age + '岁';
+        }
+    }
+
+    // 创建两个Person对象
+    let person1 = Person('one', 18);
+    let person2 = Person('two', 20);
+
+    // 通过点语法访问对象属性
+    console.log(obj.name); // 李磊
+    // 不加小括号 会显示整个函数和值
+    console.log(obj.age); // 18
+    // 加小括号 只显示值
+    console.log(obj.age()); // 18
+
+    // 通过中括号法访问对象属性 可用变量或数字作为属性名 而点方法不可以
+    console.log(obj['name']); // 李磊
+    let age = 'age';
+    console.log(obj[age]); // 18
+
+    // this代表函数运行时 自动生成的一个内部对象 只能在函数内部使用
+    // 随着函数使用场合的不同 this的值会发生变化 this指向调用当前函数的对象
+    let index = 0;
+
+    function fun() {
+        // 此处的this代表就是全局对象window
+        this.index = 1;
+    }
+
+    // 使用window.fun()来调用函数 调用函数对象为window 所以this指向window
+    fun();
+    console.log(index); // 1
+
+    // 作为对象方法的调用 this指向当前实例对象
+    let point = {
+        x: 0,
+        y: 0,
+        moveTo: function (x, y) {
+            this.x += x;
+            this.y += y;
+        }
+    };
+    point.moveTo(10, 10);
+    console.log('x : ' + point.x + ', y : ' + point.y);  // 输出 x : 10, y : 10
+
+    // 使用point对象调用moveTo()函数 this指向point
+
+    // 构造函数 通过函数生成新对象 this指向这个新对象
+    function Student() {
+        this.name = '李磊';
+    }
+
+    let student = new Student();
+    console.log(student.name); // 李磊
+
+    // for in遍历对象
+    for (let attr in obj) {
+        if (typeof obj[attr] !== 'function') {
+            console.log('属性操作 ' + obj[attr]);
+        }
+    }
+
+    // eval()函数会将传入的字符串当做js代码执行 如eval('2+3')返回5
+    // 把json字符串转化为对象
+    let json = '[{"name" : "one", "age" : 18}, {"name" : "two", "age" : 20}]';
+    // 把json字符串转化为js对象
+    let arr = eval(json);
+    // 对数据做解析
+    for (let i = 0; i < arr.length; i++) {
+        console.log('name : ' + arr[i].name + ', age : ' + arr[i].age);
+    }
+
+    console.log('----------');
+
+    /**
+     * call apply bind
+     * 作用相同 可改变某个函数运行时this指向
+     * 区别 apply所有参数必须放在数组传如 bind返回值为函数需要手动执行
+     */
+
+    function obj1() {
+    }
+
+    obj1.prototype = {
+        name: 'obj1',
+        age: 1,
+        out: function () {
+            console.log('name -> ' + this.name + ' age -> ' + this.age);
+        }
+    };
+
+    var obj2 = new obj1;
+    obj2.out();
+
+    var param = {
+        name: 'obj2',
+        age: 2
+    };
+
+    // 方法'劫持'
+    obj2.out.call(param);
+    obj2.out.apply(param);
+    obj2.out.bind(param)();
+
+    // 改变作用域
+    var name = "name1";
+    var obj3 = {
+        name: "name2"
+    };
+
+    function out() {
+        return this.name;
+    }
+
+    console.log(out.call(this)); // name1
+    console.log(out.call(obj3)); // name2
+
+    // 父类
+    function Person(name, age) {
+        this.out = function () {
+            return 'name ' + name + ' age ' + age + ' address ' + this.address;
+        }
+    }
+
+    /**
+     * 通过call或apply实现继承
+     */
+    function Chinese(name, age, address) {
+        Person.call(this, name, age);
+        // Person.apply(this, [name, age]);
+        this.address = address;
+        // this.out = function () {
+        //     return '中国';
+        // }
+    }
+
+    /**
+     * 通过原型实现继承
+     */
+    function American(name, age, address) {
+        this.address = address;
+    }
+
+    American.prototype = new Person();
+
+    // 设置原型的构造器 仅可用于识别对象是由哪个构造函数初始化 仅此而已
+    American.prototype.constructor = American;
+
+    let chinese = new Chinese('李磊', 18, '上海');
+    console.log(chinese.out());
+    // 原型继承缺点 无法往父类构造函数中传参
+    let american = new American('frank', 20, '华盛顿');
+    console.log(american.out());
+    console.log(american.constructor === Person, 'Person');
+    console.log(american.constructor === American, 'American');
+    // 实例对象可以继承原型对象的属性
+    let test = new Person();
+    console.log(test.constructor === Person); // true
+    console.log(test.__proto__ === Person.prototype); // true
+
+    /**
+     * 普通函数中this
+     * 指向直接调用者 如obj.fun fun中最外层this就是指向obj
+     * 无直接调用者 this指向window如自执行函数
+     * 使用call apply bind时 this指向绑定对象
+     *
+     * call方法 参数1为this指向 后传入其它参数 参数1为null undefined时 this指向window
+     * apply方法 参数1为this指向 参数2为参数数组 参数1为null undefined时
+     * bind方法 与call方法区别为bind方法返回值为函数 其它特性相同
+     *
+     * es6箭头函数中this
+     * 指向定义此函数时 所处上下文对象 无上下文对象时指向window
+     * call apply bind等方法也不能改变箭头函数this指向
+     */
+    obj = {age: 18};
+    obj.fun = function () {
+        console.log(this, 1); // this为obj
+    }
+    obj.fun.fun1 = function () {
+        console.log(this, 21); // this为obj.fun
+    }
+    obj.fun.fun2 = () => {
+        console.log(this, 22); // this为window
+    }
+    obj.fun.fun3 = function () {
+        return () => {
+            console.log(this, 23); // this为obj
+        }
+    }
+    obj.fun();
+    obj.fun.fun1();
+    obj.fun.fun2();
+    obj.fun.fun3()();
+    console.log((function () {
+        return this; // this为window
+    }()));
+    /**
+     * 'use strict'指令只允许出现在脚本或函数的开头
+     * 非严格模式 无执行主体时this指向window 严格模式下 无执行主体时this指向undefined
+     */
+    // 严格模式开始 测试严格模式 需要在一个新页面复制如下代码测试
+    'use strict';
+    console.log('严格模式 全局作用域中的this');
+    console.log(this); // window
+
+    console.log('严格模式 全局作用域中函数中的this');
+
+    function f1() {
+        function f2() {
+            console.log(this); // undefined
+        }
+
+        f2();
+    }
+
+    f1();
+
+    (function () {
+        console.log(this); // undefined
+    })();
+
+    (() => console.log(this))(); // window
+    // 严格模式结束
+</script>
+</body>
+</html>
